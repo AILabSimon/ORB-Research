@@ -147,7 +147,11 @@ def run(inst, tf=1, u22="DEEP", be=False, draws=None, d=None, draw_rule="nearest
                 rejects.append(dict(date=str(pd.Timestamp(day).date()),inst=inst,tf=tf,u22=u22,
                     side=side,reason=("no_draw" if draw is None else "rr_below_2"),
                     rr=rr,R_pts=R,inside_closes=inside_closes,
-                    brk_body_ratio=brk_body/brk_rng,brk_vol_ratio=brk_vol_ratio))
+                    brk_body_ratio=brk_body/brk_rng,brk_vol_ratio=brk_vol_ratio,
+                    ORH=ORH,ORL=ORL,break_m=int(M[bi]),rej_m=int(M[r_i]),entry_m=int(M[fi]),
+                    entry=px,stop=stop,draw=(draw if draw is not None else np.nan),
+                    draw_type=(draw_nm or "NONE"),rr_pre=rr,exit_reason="GATE_REJECT",
+                    gross=np.nan,mfe_R=np.nan))
                 used[side]=True; i=fi+1; continue
             # ---- manage
             ex=exr=None; mfe=mae=0.; trail=stop; armed=False; term=fi
