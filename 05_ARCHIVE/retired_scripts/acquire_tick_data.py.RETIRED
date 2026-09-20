@@ -1,0 +1,248 @@
+#!/usr/bin/env python3
+"""
+acquire_tick_data.py — Dukascopy TICK acquisition for the ORB cross-market branch.
+
+WHY THIS SCRIPT EXISTS
+----------------------
+The SVP authorised acquisition of tick data via Dukascopy using a Python approach.
+Both available shells (the Claude cloud container and the desktop Linux VM) are behind an
+egress allowlist that returns HTTP 403 at the gateway for `freeserv.dukascopy.com`, so the
+download could not be run from the research session. This script is the acquisition, ready
+to run from any machine with unrestricted outbound HTTPS — or from the research session once
+`freeserv.dukascopy.com` is added to the allowlist. Nothing in it needs changing either way.
+
+WHAT IT DOES AND DOES NOT DELIVER
+---------------------------------
+DELIVERS: tick-level bid and ask for NAS100 (E_NQ-100 index CFD) and XAUUSD (spot gold),
+restricted to the session windows the ORB candidate actually trades. This removes two of the
+three remaining modelling assumptions in the cost model:
+  1. spread at the moment of entry, measured rather than approximated from 1-minute closes;
+  2. same-bar stop/target sequencing, resolved from the real tick order rather than by a
+     conservative rule (this affects 11.3% of trades).
+
+DOES NOT DELIVER: NQ, MNQ, ES, MES, GC or MGC futures. Dukascopy's full 1,380-instrument
+catalogue contains no futures contracts — verified against dukascopy-python 4.0.1 on
+2026-09-13. `E_NQ-100` is an index CFD; `CME.US/USD` is CME Group's equity share; `ES.US/USD`
+is Eversource Energy stock. The only gold instrument is `XAU/USD` spot. Futures data requires
+a different vendor.
+
+USAGE
+-----
+    pip install dukascopy-python==4.0.1 pandas
+    python3 acquire_tick_data.py --probe                 # one small window, verify access
+    python3 acquire_tick_data.py --instrument NAS100 --start 2024-09-01 --end 2026-08-31
+    python3 acquire_tick_data.py --instrument XAUUSD --start 2023-06-01 --end 2026-08-31
+
+Writes one Parquet file per instrument-month to OUT_DIR, plus a provenance JSON per file in
+the same schema the existing shared store uses. Resumable: an existing, non-empty output file
+for a month is skipped unless --force is given.
+"""
+
+import argparse, json, hashlib, os, sys, time
+import datetime as dt
+from pathlib import Path
+
+import pandas as pd
+
+try:
+    import dukascopy_python as dk
+    from dukascopy_python import instruments as I
+except ImportError:
+    sys.exit("Install first:  pip install dukascopy-python==4.0.1 pandas")
+
+# --------------------------------------------------------------------------------------
+# Configuration — session windows are LOCAL to each instrument's own tz and DST-aware.
+# Only these windows are downloaded; full 24h tick history is ~20x the volume for no benefit
+# to this research question.
+# --------------------------------------------------------------------------------------
+OUT_DIR = Path(os.environ.get(
+    "ORB_TICK_DIR",
+    "/Users/ailab/Documents/AI Lab/Data/Downloads/Dukascopy/ticks"))
+
+CONFIG = {
+    "NAS100": dict(
+        instrument=I.INSTRUMENT_IDX_AMERICA_E_NQ_100,
+        provider_name="E_NQ-100",
+        representation="INDEX_CFD_OTC",
+        proxy_for="NQ / MNQ futures — PROXY ONLY, not futures data",
+        tz="America/New_York",
+        win_start=(9, 20),    # 10 min before the 09:30 range starts
+        win_end=(16, 0),
+        unit_name="index points",
+    ),
+    "XAUUSD": dict(
+        instrument=I.INSTRUMENT_FX_METALS_XAU_USD,
+        provider_name="XAU/USD",
+        representation="SPOT",
+        proxy_for="GC / MGC futures — PROXY ONLY, not futures data",
+        tz="America/New_York",
+        win_start=(8, 10),    # 10 min before the 08:20 COMEX range starts
+        win_end=(16, 0),
+        unit_name="USD",
+    ),
+}
+
+CHUNK_MINUTES = 60          # request size; Dukascopy caps a tick response at 30k rows
+MAX_RETRIES = 4
+BACKOFF_BASE = 3.0          # seconds; doubles each retry
+
+
+def sha256(path: Path) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1 << 22), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def fetch_chunk(instrument, side, start_utc, end_utc):
+    """One request with bounded retry. Returns a DataFrame (possibly empty)."""
+    last = None
+    for attempt in range(MAX_RETRIES):
+        try:
+            return dk.fetch(instrument, dk.INTERVAL_TICK, side, start_utc, end_utc)
+        except Exception as e:
+            last = e
+            msg = str(e)
+            # A gateway policy denial will never succeed on retry — fail fast and say so.
+            if "403" in msg or "Tunnel connection failed" in msg or "ProxyError" in msg:
+                raise RuntimeError(
+                    "Blocked by an egress proxy (HTTP 403 at CONNECT), not a transient error.\n"
+                    "freeserv.dukascopy.com must be on the network allowlist, or this script\n"
+                    "must be run from a machine with unrestricted outbound HTTPS."
+                ) from e
+            time.sleep(BACKOFF_BASE * (2 ** attempt))
+    raise RuntimeError(f"{MAX_RETRIES} attempts failed: {last}")
+
+
+def session_windows(cfg, day_local: dt.date):
+    """UTC (start, end) for one local session day, DST-aware. None on weekends."""
+    if day_local.weekday() >= 5:
+        return None
+    tz = pd.Timestamp(day_local, tz=cfg["tz"]).tz
+    s = pd.Timestamp(dt.datetime.combine(day_local, dt.time(*cfg["win_start"])), tz=tz)
+    e = pd.Timestamp(dt.datetime.combine(day_local, dt.time(*cfg["win_end"])), tz=tz)
+    return s.tz_convert("UTC").to_pydatetime().replace(tzinfo=None), \
+           e.tz_convert("UTC").to_pydatetime().replace(tzinfo=None)
+
+
+def download_month(name, cfg, year, month, force=False):
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    out = OUT_DIR / f"{name}_tick_{year:04d}-{month:02d}.parquet"
+    if out.exists() and out.stat().st_size > 0 and not force:
+        print(f"  {out.name}: exists, skipping")
+        return out
+
+    first = dt.date(year, month, 1)
+    last = (dt.date(year + (month == 12), (month % 12) + 1, 1) - dt.timedelta(days=1))
+
+    frames = []
+    day = first
+    while day <= last:
+        win = session_windows(cfg, day)
+        if win is None:
+            day += dt.timedelta(days=1)
+            continue
+        s_utc, e_utc = win
+        cur = s_utc
+        while cur < e_utc:
+            nxt = min(cur + dt.timedelta(minutes=CHUNK_MINUTES), e_utc)
+            parts = {}
+            for side_label, side in (("bid", dk.OFFER_SIDE_BID), ("ask", dk.OFFER_SIDE_ASK)):
+                d = fetch_chunk(cfg["instrument"], side, cur, nxt)
+                if d is not None and len(d):
+                    col = "close" if "close" in d.columns else d.columns[0]
+                    parts[side_label] = d[col].rename(side_label)
+            if parts:
+                merged = pd.concat(parts.values(), axis=1).sort_index()
+                merged["spread"] = merged.get("ask") - merged.get("bid")
+                frames.append(merged)
+            cur = nxt
+        print(f"  {day}  cumulative rows: {sum(len(f) for f in frames):,}")
+        day += dt.timedelta(days=1)
+
+    if not frames:
+        print(f"  {year}-{month:02d}: no data returned")
+        return None
+
+    df = pd.concat(frames).sort_index()
+    df = df[~df.index.duplicated(keep="first")]
+    df.index.name = "timestamp_utc"
+    df.to_parquet(out, compression="zstd")
+
+    prov = {
+        "schema_version": "dukascopy_tick_provenance_v1",
+        "provider": "DUKASCOPY",
+        "research_instrument": name,
+        "provider_instrument": cfg["provider_name"],
+        "market_representation": cfg["representation"],
+        "IMPORTANT_proxy_note": cfg["proxy_for"],
+        "interval": "TICK",
+        "sides": ["bid", "ask", "spread"],
+        "unit": cfg["unit_name"],
+        "session_window_local": f"{cfg['win_start'][0]:02d}:{cfg['win_start'][1]:02d}-"
+                                f"{cfg['win_end'][0]:02d}:{cfg['win_end'][1]:02d}",
+        "session_tz": cfg["tz"],
+        "dst_handling": "tz-aware via the tz database; UK/US misaligned weeks handled by conversion",
+        "period": f"{year:04d}-{month:02d}",
+        "row_count": int(len(df)),
+        "coverage_start_utc": str(df.index[0]),
+        "coverage_end_utc": str(df.index[-1]),
+        "median_spread": float(df["spread"].median()) if "spread" in df else None,
+        "file": str(out),
+        "sha256": sha256(out),
+        "written_by": "acquire_tick_data.py",
+        "written_at_utc": dt.datetime.utcnow().isoformat() + "Z",
+        "caveat": "Tick data for an OTC CFD / spot instrument. NOT futures. Do not label as NQ, "
+                  "MNQ, ES, MES, GC or MGC, and do not combine with futures evidence.",
+    }
+    with open(out.with_suffix(".provenance.json"), "w") as f:
+        json.dump(prov, f, indent=2)
+    print(f"  WROTE {out.name}: {len(df):,} ticks, median spread "
+          f"{prov['median_spread']:.4f} {cfg['unit_name']}")
+    return out
+
+
+def probe():
+    """One small window, to verify network access before committing to a full run."""
+    cfg = CONFIG["NAS100"]
+    print("Probing freeserv.dukascopy.com with a 45-minute NAS100 tick request...")
+    d = fetch_chunk(cfg["instrument"], dk.OFFER_SIDE_BID,
+                    dt.datetime(2026, 8, 5, 13, 25), dt.datetime(2026, 8, 5, 14, 10))
+    print(f"SUCCESS — {len(d):,} ticks returned. Network access is available; "
+          f"run the full acquisition.")
+    print(d.head(3).to_string())
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--probe", action="store_true", help="verify access with one small request")
+    ap.add_argument("--instrument", choices=sorted(CONFIG), help="which instrument to download")
+    ap.add_argument("--start", help="YYYY-MM-DD")
+    ap.add_argument("--end", help="YYYY-MM-DD")
+    ap.add_argument("--force", action="store_true", help="re-download months already present")
+    a = ap.parse_args()
+
+    if a.probe:
+        probe(); return
+    if not (a.instrument and a.start and a.end):
+        ap.error("--instrument, --start and --end are required (or use --probe)")
+
+    cfg = CONFIG[a.instrument]
+    s = dt.date.fromisoformat(a.start); e = dt.date.fromisoformat(a.end)
+    print(f"{a.instrument} ({cfg['provider_name']}, {cfg['representation']}) "
+          f"{s} -> {e}\n  >>> {cfg['proxy_for']}\n  output: {OUT_DIR}\n")
+
+    y, m = s.year, s.month
+    while (y, m) <= (e.year, e.month):
+        print(f"{y:04d}-{m:02d}")
+        download_month(a.instrument, cfg, y, m, force=a.force)
+        m += 1
+        if m > 12:
+            m = 1; y += 1
+    print("\nDone.")
+
+
+if __name__ == "__main__":
+    main()

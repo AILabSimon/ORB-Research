@@ -1,0 +1,622 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ORB Programme research standing - SVP brief, 13 September 2026.">
+<style>html{color-scheme:light dark}body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+@media print{body{background:#fff}section{break-inside:avoid}figure,.tile,.note,.statuscol{break-inside:avoid}}</style>
+<title>ORB Programme Standing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+:root{
+  color-scheme: light;
+  --bg:#f7f9fb; --surface:#ffffff; --surface-2:#eef2f7;
+  --ink:#101720; --ink-2:#4a5766; --ink-3:#7d8b9b;
+  --rule:#dbe3ec; --rule-2:#c3cedb;
+  --accent:#2a78d6;
+  --good:#0ca30c; --crit:#d03b3b; --warn:#fab219; --neutral:#9aa7b5;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100;
+  --chart-surface:#ffffff;
+  --shadow:0 1px 2px rgba(16,23,32,.06), 0 6px 18px -10px rgba(16,23,32,.18);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#0d1218; --surface:#151c25; --surface-2:#1d2631;
+    --ink:#eef3f8; --ink-2:#a9b7c6; --ink-3:#76859594;
+    --ink-3:#7b8998;
+    --rule:#28323e; --rule-2:#374553;
+    --accent:#3987e5;
+    --good:#0ca30c; --crit:#d03b3b; --warn:#fab219; --neutral:#6d7b8a;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+    --chart-surface:#151c25;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 22px -12px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#0d1218; --surface:#151c25; --surface-2:#1d2631;
+  --ink:#eef3f8; --ink-2:#a9b7c6; --ink-3:#7b8998;
+  --rule:#28323e; --rule-2:#374553;
+  --accent:#3987e5;
+  --good:#0ca30c; --crit:#d03b3b; --warn:#fab219; --neutral:#6d7b8a;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+  --chart-surface:#151c25;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 22px -12px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box}
+body{background:var(--bg); color:var(--ink);
+  font-family:"Source Sans 3",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:16px; line-height:1.6; margin:0;}
+.wrap{max-width:1080px; margin:0 auto; padding-inline:20px; padding-block:0 72px;}
+h1,h2,h3,h4{font-family:Archivo,-apple-system,sans-serif; text-wrap:balance; margin:0; line-height:1.15;}
+h1{font-size:clamp(28px,4.6vw,44px); font-weight:700; letter-spacing:-.02em;}
+h2{font-size:clamp(20px,2.8vw,27px); font-weight:600; letter-spacing:-.015em;}
+h3{font-size:17px; font-weight:600; letter-spacing:-.005em;}
+p{margin:0}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace; font-variant-numeric:tabular-nums;}
+.eyebrow{font-family:Archivo,sans-serif; font-size:11px; font-weight:600; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--ink-3);}
+
+header.top{border-bottom:1px solid var(--rule); padding-block:44px 32px; margin-bottom:40px;}
+.titlerow{display:flex; flex-wrap:wrap; gap:20px; align-items:flex-end; justify-content:space-between;}
+.sub{color:var(--ink-2); max-width:62ch; margin-top:14px; font-size:17px;}
+.stamp{font-family:"JetBrains Mono",monospace; font-size:12px; color:var(--ink-3); text-align:right; line-height:1.7;}
+
+section{margin-bottom:52px; scroll-margin-top:20px;}
+.sechead{display:flex; gap:14px; align-items:baseline; border-bottom:1px solid var(--rule);
+  padding-bottom:10px; margin-bottom:24px;}
+.sechead .n{font-family:"JetBrains Mono",monospace; font-size:13px; font-weight:700; color:var(--accent);}
+
+.note{border-left:3px solid var(--crit); background:var(--surface); padding:18px 20px;
+  border-radius:0 8px 8px 0; box-shadow:var(--shadow); margin-block:0 24px;}
+.note.ok{border-left-color:var(--good)}
+.note.warn{border-left-color:var(--warn)}
+.note h3{margin-bottom:6px}
+.note p{color:var(--ink-2); font-size:15.5px}
+.note p + p{margin-top:10px}
+
+.grid{display:grid; gap:16px}
+.g3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+
+.tile{background:var(--surface); border:1px solid var(--rule); border-radius:10px; padding:18px 18px 16px;}
+.tile .k{font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3);}
+.tile .v{font-family:"JetBrains Mono",monospace; font-size:29px; font-weight:700; letter-spacing:-.02em;
+  margin-top:8px; line-height:1; font-variant-numeric:tabular-nums;}
+.tile .d{font-size:13.5px; color:var(--ink-2); margin-top:8px; line-height:1.45}
+.pos{color:var(--good)} .neg{color:var(--crit)} .neu{color:var(--ink-2)}
+
+.tablewrap{overflow-x:auto; border:1px solid var(--rule); border-radius:10px; background:var(--surface);}
+table{border-collapse:collapse; width:100%; min-width:720px; font-size:14px;}
+th,td{padding:10px 13px; text-align:right; border-bottom:1px solid var(--rule); white-space:nowrap;}
+th{font-family:Archivo,sans-serif; font-size:11px; font-weight:600; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--ink-3); background:var(--surface-2); position:sticky; top:0;}
+td:first-child,th:first-child{text-align:left; white-space:normal; min-width:180px;}
+td.num{font-family:"JetBrains Mono",monospace; font-variant-numeric:tabular-nums;}
+tbody tr:last-child td{border-bottom:none}
+tr.hl td{background:color-mix(in srgb, var(--accent) 7%, transparent);}
+.sesspill{display:inline-block; font-size:11px; font-family:"JetBrains Mono",monospace;
+  padding:2px 7px; border-radius:4px; background:var(--surface-2); color:var(--ink-2);
+  border:1px solid var(--rule); margin-left:6px;}
+
+figure{margin:0; background:var(--surface); border:1px solid var(--rule); border-radius:10px;
+  padding:20px 18px 14px;}
+figcaption{font-size:13px; color:var(--ink-2); margin-top:12px; line-height:1.5}
+svg{display:block; width:100%; height:auto; overflow:visible}
+.legend{display:flex; flex-wrap:wrap; gap:16px; margin-bottom:14px; font-size:13px; color:var(--ink-2);}
+.legend span{display:inline-flex; align-items:center; gap:7px}
+.sw{width:12px; height:12px; border-radius:3px; display:inline-block}
+
+ul.clean{margin:0; padding-left:0; list-style:none;}
+ul.clean li{padding-left:20px; position:relative; margin-bottom:9px; color:var(--ink-2); font-size:15.5px;}
+ul.clean li::before{content:""; position:absolute; left:4px; top:10px; width:6px; height:6px;
+  border-radius:50%; background:var(--rule-2);}
+ul.clean li b{color:var(--ink); font-weight:600}
+
+.statuscol{background:var(--surface); border:1px solid var(--rule); border-radius:10px; padding:18px;}
+.statuscol h3{display:flex; align-items:center; gap:9px; margin-bottom:12px; font-size:15px}
+.dot{width:10px;height:10px;border-radius:50%;flex:none}
+.statuscol li{font-size:14.5px}
+
+.steps{display:grid; gap:10px; grid-template-columns:repeat(auto-fit,minmax(158px,1fr)); margin-top:18px}
+.step{background:var(--surface); border:1px solid var(--rule); border-radius:9px; padding:13px 14px;}
+.step .sn{font-family:"JetBrains Mono",monospace; font-size:12px; font-weight:700; color:var(--accent)}
+.step .st{font-family:Archivo,sans-serif; font-weight:600; font-size:14.5px; margin-top:5px}
+.step .sd{font-size:13px; color:var(--ink-2); margin-top:5px; line-height:1.45}
+
+.arrowrow{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-block:20px}
+.chg{background:var(--surface); border:1px solid var(--rule); border-radius:9px; padding:12px 15px; flex:1 1 240px}
+.chg .from{font-family:"JetBrains Mono",monospace; font-size:13px; color:var(--crit); text-decoration:line-through; text-decoration-thickness:1px}
+.chg .to{font-family:"JetBrains Mono",monospace; font-size:13.5px; color:var(--good); font-weight:500; margin-top:3px}
+.chg .lbl{font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3); margin-bottom:7px}
+
+@media (max-width:560px){
+  .stamp{text-align:left}
+  body{font-size:15.5px}
+}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="titlerow">
+    <div>
+      <div class="eyebrow">ORB Programme &middot; Research Standing</div>
+      <h1 style="margin-top:12px">Where the ORB research stands</h1>
+    </div>
+    <div class="stamp">13 Sep 2026<br>Prepared for SVP<br>Analyst Agent</div>
+  </div>
+  <p class="sub">Two closed investigations and one live cross-market branch. One strategy pattern
+  survives, in one market, and its verdict depends on a dataset we do not yet hold. Everything
+  below is measured; where something is not measured it is labelled as such.</p>
+</header>
+
+<!-- ============ HONESTY PANEL ============ -->
+<section>
+  <div class="note">
+    <h3>Read this first — three things you may be expecting that are not here</h3>
+    <p><b>BOS and CHOCH have not been researched or tested in this programme.</b> No Break-of-Structure
+    or Change-of-Character work has been done, no Smart-Money-Concepts framework has been implemented,
+    and there is no data on whether either adds anything. I have not drawn a chart of them because I
+    would be inventing it.</p>
+    <p><b>There is no six-step trading model in this work.</b> If a six-step methodology exists in
+    another programme, it is not this one. What I <i>can</i> show you is the six-stage mechanism we
+    actually built and measured — it is set out in section 02 and clearly labelled as ours.</p>
+    <p><b>No live or forward-tested trades exist.</b> Every number in this brief is a historical
+    simulation on 1-minute data. Nothing has been traded.</p>
+  </div>
+</section>
+
+<!-- ============ 01 HEADLINE ============ -->
+<section>
+  <div class="sechead"><span class="n">01</span><h2>The headline</h2></div>
+  <div class="grid g3">
+    <div class="tile">
+      <div class="k">Strategy patterns tested</div>
+      <div class="v">14</div>
+      <div class="d">Across 3 investigations, 5 markets, 3 range lengths and 4 entry families.</div>
+    </div>
+    <div class="tile">
+      <div class="k">Patterns that survive costs</div>
+      <div class="v pos">1</div>
+      <div class="d">Nasdaq opening-range retest — and only under futures costs we cannot yet verify.</div>
+    </div>
+    <div class="tile">
+      <div class="k">Verdict on that one</div>
+      <div class="v neu" style="font-size:22px">DATA&#8209;LIMITED</div>
+      <div class="d">Does not advance. Blocked on NQ/MNQ futures data, not on more analysis.</div>
+    </div>
+  </div>
+
+  <div class="note ok" style="margin-top:20px">
+    <h3>The one finding that changed everything</h3>
+    <p>The first investigation failed because its stop was sized off the <b>entry candle</b> — about
+    9 index points — so a realistic round-trip cost consumed <b>28% of every unit of risk</b>.
+    Re-sizing the stop off the <b>opening range itself</b> raised risk per trade to 10–70 points and
+    dropped cost to <b>4–18%</b> of risk. The cost problem was a property of that one stop
+    construction, not of opening-range trading. That insight is reusable whatever happens next.</p>
+  </div>
+</section>
+
+<!-- ============ 02 MECHANISM ============ -->
+<section>
+  <div class="sechead"><span class="n">02</span><h2>The mechanism we actually test</h2></div>
+  <p style="color:var(--ink-2); max-width:66ch; margin-bottom:6px">This is our own construction, built
+  from measured behaviour. It is not BOS/CHOCH and it is not anyone's published six-step model. Every
+  stage is objective and codeable — no discretion, no indicators.</p>
+
+  <figure style="margin-top:20px">
+    <svg viewBox="0 0 860 300" role="img" aria-label="Diagram of the six-stage opening-range retest mechanism">
+      <defs>
+        <marker id="ar" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="var(--ink-3)"/>
+        </marker>
+      </defs>
+      <!-- opening range band -->
+      <rect x="60" y="150" width="740" height="72" fill="color-mix(in srgb, var(--accent) 9%, transparent)"/>
+      <line x1="60" y1="150" x2="800" y2="150" stroke="var(--accent)" stroke-width="2"/>
+      <line x1="60" y1="222" x2="800" y2="222" stroke="var(--accent)" stroke-width="2"/>
+      <line x1="60" y1="186" x2="800" y2="186" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3 4" opacity=".5"/>
+      <rect x="60" y="150" width="118" height="72" fill="color-mix(in srgb, var(--accent) 16%, transparent)"/>
+      <text x="64" y="143" class="mono" font-size="11" fill="var(--ink-3)">range high</text>
+      <text x="64" y="238" class="mono" font-size="11" fill="var(--ink-3)">range low</text>
+      <text x="119" y="266" text-anchor="middle" font-size="11.5" fill="var(--ink-2)" font-family="Archivo">09:30&#8211;10:00</text>
+
+      <!-- price path -->
+      <polyline points="62,200 90,178 118,195 150,170 178,182 212,155 240,132 268,118 300,128 332,146 360,151 392,143 424,120 470,96 520,74 580,58 650,44 720,52 780,40"
+        fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+
+      <!-- stage markers -->
+      <g font-family="JetBrains Mono" font-size="11" font-weight="700">
+        <circle cx="119" cy="118" r="11" fill="var(--accent)"/><text x="119" y="122" text-anchor="middle" fill="#fff">1</text>
+        <circle cx="212" cy="122" r="11" fill="var(--accent)"/><text x="212" y="126" text-anchor="middle" fill="#fff">2</text>
+        <circle cx="268" cy="86" r="11" fill="var(--accent)"/><text x="268" y="90" text-anchor="middle" fill="#fff">3</text>
+        <circle cx="360" cy="182" r="11" fill="var(--accent)"/><text x="360" y="186" text-anchor="middle" fill="#fff">4</text>
+        <circle cx="470" cy="64" r="11" fill="var(--accent)"/><text x="470" y="68" text-anchor="middle" fill="#fff">5</text>
+        <circle cx="780" cy="72" r="11" fill="var(--accent)"/><text x="780" y="76" text-anchor="middle" fill="#fff">6</text>
+      </g>
+      <line x1="119" y1="129" x2="119" y2="148" stroke="var(--ink-3)" stroke-width="1"/>
+      <line x1="212" y1="133" x2="212" y2="152" stroke="var(--ink-3)" stroke-width="1"/>
+      <line x1="360" y1="171" x2="360" y2="155" stroke="var(--ink-3)" stroke-width="1"/>
+
+      <!-- entry / stop -->
+      <line x1="360" y1="151" x2="800" y2="151" stroke="var(--good)" stroke-width="1.4" stroke-dasharray="5 4"/>
+      <text x="806" y="155" class="mono" font-size="11" fill="var(--good)">entry</text>
+      <line x1="360" y1="186" x2="800" y2="186" stroke="var(--crit)" stroke-width="1.4" stroke-dasharray="5 4"/>
+      <text x="806" y="190" class="mono" font-size="11" fill="var(--crit)">stop 0.5&#215;W</text>
+      <path d="M348,151 L348,186" stroke="var(--ink-3)" stroke-width="1" marker-end="url(#ar)"/>
+      <text x="341" y="172" text-anchor="end" class="mono" font-size="10.5" fill="var(--ink-3)">1R</text>
+      <text x="60" y="28" font-family="Archivo" font-size="13" font-weight="600" fill="var(--ink)">Long example &#8212; a short is the mirror</text>
+    </svg>
+    <figcaption>Illustrative geometry, drawn to the rules below. W = width of the opening range.
+    Median risk on the Nasdaq candidate is 25.7 index points; median holding time 66 minutes.</figcaption>
+  </figure>
+
+  <div class="steps">
+    <div class="step"><div class="sn">01</div><div class="st">Build the range</div><div class="sd">First 30 minutes of the session, wick to wick. Fixed clock, no judgement.</div></div>
+    <div class="step"><div class="sn">02</div><div class="st">Wait for a break</div><div class="sd">Price trades beyond the range edge. This alone is not a signal.</div></div>
+    <div class="step"><div class="sn">03</div><div class="st">Require a completed close</div><div class="sd">A full 30-minute bar must close outside. Confirms the break was real.</div></div>
+    <div class="step"><div class="sn">04</div><div class="st">Enter on the retest</div><div class="sd">First return to within 0.10&#215;W of the broken edge. <b>This is the edge.</b></div></div>
+    <div class="step"><div class="sn">05</div><div class="st">Stop and trail</div><div class="sd">Stop at 0.5&#215;W. Once +1R, trail 1R behind the high.</div></div>
+    <div class="step"><div class="sn">06</div><div class="st">Hard time exit</div><div class="sd">Flat by 180 minutes regardless. No overnight risk.</div></div>
+  </div>
+</section>
+
+<!-- ============ 03 BEFORE ============ -->
+<section>
+  <div class="sechead"><span class="n">03</span><h2>Where we were</h2></div>
+  <p style="color:var(--ink-2); max-width:66ch; margin-bottom:20px">The first investigation reconstructed
+  a published opening-range method faithfully — we validated our rebuild against the source's own
+  stated stop sizes and matched them. It still failed, and the failure profile was severe.</p>
+
+  <div class="tablewrap">
+    <table>
+      <caption class="eyebrow" style="text-align:left; padding:12px 13px; color:var(--ink-3)">Original construction &middot; entry-candle stop &middot; results by session</caption>
+      <thead><tr>
+        <th>Market &amp; session</th><th>Trades</th><th>W</th><th>L</th><th>BE</th>
+        <th>Win&nbsp;%</th><th>Total&nbsp;R</th><th>R&nbsp;/&nbsp;trade</th><th>Max&nbsp;DD</th>
+      </tr></thead>
+      <tbody>
+        <tr><td>Nasdaq <span class="sesspill">US 09:30</span></td><td class="num">3,895</td><td class="num">409</td><td class="num">3,485</td><td class="num">1</td><td class="num">10.5%</td><td class="num neg">&minus;641.5</td><td class="num neg">&minus;0.165</td><td class="num">672R</td></tr>
+        <tr><td>EURUSD <span class="sesspill">London 08:00</span></td><td class="num">5,598</td><td class="num">480</td><td class="num">5,115</td><td class="num">3</td><td class="num">8.6%</td><td class="num neg">&minus;4,077</td><td class="num neg">&minus;0.728</td><td class="num">4,080R</td></tr>
+        <tr><td>GBPUSD <span class="sesspill">London 08:00</span></td><td class="num">5,635</td><td class="num">437</td><td class="num">5,198</td><td class="num">0</td><td class="num">7.8%</td><td class="num neg">&minus;5,189</td><td class="num neg">&minus;0.921</td><td class="num">5,188R</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="color:var(--ink-3); font-size:13.5px; margin-top:10px">Nasdaq costed at micro-futures
+  sizing ($2.67 round trip); FX at measured spot spread plus commission. A 7.8&ndash;10.5% win rate with
+  a handful of very large winners is a lottery-ticket distribution — gross expectancy was roughly zero
+  and costs did the rest.</p>
+</section>
+
+<!-- ============ 04 ERRORS ============ -->
+<section>
+  <div class="sechead"><span class="n">04</span><h2>Errors found, and what we corrected</h2></div>
+  <p style="color:var(--ink-2); max-width:66ch; margin-bottom:20px">Four were mine. One was raised by
+  the research side and I accepted it. All are corrected in the record rather than explained around.</p>
+
+  <div class="grid g2">
+    <div class="note warn" style="margin:0">
+      <h3>1 &middot; Median reported as a breakeven requirement</h3>
+      <p>I quoted cost as "18.8% of risk" and breakeven as "+0.290R" as though they were the same
+      quantity. They were the <b>median</b> and the <b>mean</b> of the same ratio. Expectancy is a mean,
+      so only the mean is a breakeven. <b>Corrected — mean is now used throughout.</b></p>
+    </div>
+    <div class="note warn" style="margin:0">
+      <h3>2 &middot; Entry slippage counted twice</h3>
+      <p>Half a point of entry slippage was already inside the fill price, and a full round trip was
+      charged on top. <b>Corrected — every cost component now applied exactly once, from an explicit
+      dollar build-up.</b> The corrected result was <i>less</i> unfavourable, not more.</p>
+    </div>
+    <div class="note warn" style="margin:0">
+      <h3>3 &middot; A claim falsified against the wrong variable</h3>
+      <p>I tested "works best on large-move mornings" by sorting on opening-range <b>width</b>. The
+      source meant <b>compression</b> — the opposite end of the variable. My result was in fact
+      <i>consistent</i> with the claim and I read it as contradicting it.
+      <b>Corrected, then the claim was tested properly and did not hold.</b></p>
+    </div>
+    <div class="note warn" style="margin:0">
+      <h3>4 &middot; A filter that was noise</h3>
+      <p>A "risk &ge; 15 points" screen looked like it rescued the strategy. It failed three of four
+      robustness tests and did not replicate on the corrected build. <b>Retired explicitly so it cannot
+      return under a different name.</b></p>
+    </div>
+    <div class="note warn" style="margin:0; grid-column:1/-1">
+      <h3>5 &middot; Overstated scope</h3>
+      <p>I wrote that the method was "falsified". We tested <b>CFD and spot proxies</b>, not NQ, MNQ,
+      ES, SPX or options. <b>Corrected wording: the reconstructed families did not produce a viable
+      costs-adjusted strategy on proxies; source-native futures and options remain untested, not
+      disproven.</b> This distinction is maintained everywhere in the record now.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 ADJUSTMENTS ============ -->
+<section>
+  <div class="sechead"><span class="n">05</span><h2>The three adjustments that mattered</h2></div>
+  <div class="arrowrow">
+    <div class="chg">
+      <div class="lbl">Entry</div>
+      <div class="from">Completed close outside the range</div>
+      <div class="to">&rarr; Retest of the broken edge</div>
+      <p style="font-size:13px;color:var(--ink-2);margin-top:8px">Measured across 5 markets: a completed
+      close <b>destroys</b> information. The retest is the strongest family in every market.</p>
+    </div>
+    <div class="chg">
+      <div class="lbl">Stop</div>
+      <div class="from">Entry candle &mdash; 9 points</div>
+      <div class="to">&rarr; 0.5 &times; range width &mdash; 25.7 points</div>
+      <p style="font-size:13px;color:var(--ink-2);margin-top:8px">Cost falls from <b>28%</b> of risk to
+      <b>5%</b>. This single change is the difference between the two tables.</p>
+    </div>
+    <div class="chg">
+      <div class="lbl">Exit</div>
+      <div class="from">Hold to invalidation</div>
+      <div class="to">&rarr; Trail from +1R, hard 180-min exit</div>
+      <p style="font-size:13px;color:var(--ink-2);margin-top:8px">Median hold falls from 3 minutes to
+      66. Break-even exits become a real category instead of ~0.</p>
+    </div>
+  </div>
+
+  <figure style="margin-top:24px">
+    <h3 style="margin-bottom:4px">Impact on the trade distribution</h3>
+    <p style="font-size:13.5px; color:var(--ink-2); margin-bottom:16px">Nasdaq, US 09:30 session. Same
+    market, same session, same data.</p>
+    <div class="legend">
+      <span><i class="sw" style="background:var(--good)"></i>Win</span>
+      <span><i class="sw" style="background:var(--neutral)"></i>Break-even</span>
+      <span><i class="sw" style="background:var(--crit)"></i>Loss</span>
+    </div>
+    <svg viewBox="0 0 860 170" role="img" aria-label="Win, break-even and loss composition before and after the adjustments">
+      <!-- BEFORE -->
+      <text x="0" y="26" font-family="Archivo" font-size="13.5" font-weight="600" fill="var(--ink)">Before</text>
+      <text x="0" y="44" class="mono" font-size="11.5" fill="var(--ink-3)">3,895 trades</text>
+      <rect x="150" y="14" width="76.7" height="34" rx="4" fill="var(--good)"/>
+      <rect x="228.7" y="14" width="0.2" height="34" fill="var(--neutral)"/>
+      <rect x="230.9" y="14" width="619.1" height="34" rx="4" fill="var(--crit)"/>
+      <text x="188" y="36" text-anchor="middle" class="mono" font-size="12" font-weight="700" fill="#fff">10.5%</text>
+      <text x="540" y="36" text-anchor="middle" class="mono" font-size="12" font-weight="700" fill="#fff">89.5% losses</text>
+
+      <!-- AFTER -->
+      <text x="0" y="110" font-family="Archivo" font-size="13.5" font-weight="600" fill="var(--ink)">After</text>
+      <text x="0" y="128" class="mono" font-size="11.5" fill="var(--ink-3)">2,578 trades</text>
+      <rect x="150" y="98" width="358.4" height="34" rx="4" fill="var(--good)"/>
+      <rect x="510.4" y="98" width="37.8" height="34" fill="var(--neutral)"/>
+      <rect x="550.2" y="98" width="299.8" height="34" rx="4" fill="var(--crit)"/>
+      <text x="329" y="120" text-anchor="middle" class="mono" font-size="12" font-weight="700" fill="#fff">51.2% wins</text>
+      <text x="529" y="120" text-anchor="middle" class="mono" font-size="10" font-weight="700" fill="#fff">5.4</text>
+      <text x="700" y="120" text-anchor="middle" class="mono" font-size="12" font-weight="700" fill="#fff">43.4% losses</text>
+    </svg>
+    <figcaption>Win rate 10.5% &rarr; 51.2%. Maximum drawdown 672R &rarr; 62R. Average win falls from
+    +6.6R to +1.0R — the new pattern wins often and small rather than rarely and huge, which is the
+    distribution you can actually size and survive.</figcaption>
+  </figure>
+</section>
+
+<!-- ============ 06 AFTER ============ -->
+<section>
+  <div class="sechead"><span class="n">06</span><h2>Where we are now &mdash; by market and session</h2></div>
+
+  <div class="tablewrap">
+    <table>
+      <caption class="eyebrow" style="text-align:left; padding:12px 13px; color:var(--ink-3)">Opening-range retest &middot; 30-minute range &middot; trail from +1R &middot; 180-minute cap</caption>
+      <thead><tr>
+        <th>Market &amp; session</th><th>Trades</th><th>W</th><th>L</th><th>BE</th>
+        <th>Win&nbsp;%</th><th>Total&nbsp;R</th><th>R&nbsp;/&nbsp;trade</th><th>R&nbsp;/&nbsp;yr</th><th>Max&nbsp;DD</th>
+      </tr></thead>
+      <tbody>
+        <tr class="hl"><td><b>Nasdaq</b> <span class="sesspill">US 09:30</span><br><span style="font-size:12px;color:var(--ink-3)">NQ futures cost sizing</span></td><td class="num">2,578</td><td class="num">1,320</td><td class="num">1,119</td><td class="num">139</td><td class="num">51.2%</td><td class="num pos">+271.2</td><td class="num pos">+0.105</td><td class="num pos">+19.4</td><td class="num">62R</td></tr>
+        <tr><td><b>Nasdaq</b> <span class="sesspill">US 09:30</span><br><span style="font-size:12px;color:var(--crit)">CFD cost &mdash; measured</span></td><td class="num">2,578</td><td class="num">1,210</td><td class="num">1,254</td><td class="num">114</td><td class="num">46.9%</td><td class="num neu">&minus;1.3</td><td class="num neu">&minus;0.001</td><td class="num neu">&minus;0.1</td><td class="num">213R</td></tr>
+        <tr><td>Gold <span class="sesspill">COMEX 08:20</span></td><td class="num">652</td><td class="num">334</td><td class="num">284</td><td class="num">34</td><td class="num">51.2%</td><td class="num pos">+36.0</td><td class="num pos">+0.055</td><td class="num pos">+9.0</td><td class="num">27R</td></tr>
+        <tr><td>Gold <span class="sesspill">US 09:30</span></td><td class="num">606</td><td class="num">315</td><td class="num">265</td><td class="num">26</td><td class="num">52.0%</td><td class="num pos">+28.2</td><td class="num pos">+0.047</td><td class="num pos">+7.1</td><td class="num">23R</td></tr>
+        <tr><td>S&amp;P 500 <span class="sesspill">US 09:30</span></td><td class="num">2,603</td><td class="num">1,148</td><td class="num">1,353</td><td class="num">102</td><td class="num">44.1%</td><td class="num neg">&minus;317.0</td><td class="num neg">&minus;0.122</td><td class="num neg">&minus;22.6</td><td class="num">362R</td></tr>
+        <tr><td>EURUSD <span class="sesspill">London 08:00</span></td><td class="num">2,811</td><td class="num">1,103</td><td class="num">1,613</td><td class="num">95</td><td class="num">39.2%</td><td class="num neg">&minus;592.9</td><td class="num neg">&minus;0.211</td><td class="num neg">&minus;45.6</td><td class="num">596R</td></tr>
+        <tr><td>GBPUSD <span class="sesspill">London 08:00</span></td><td class="num">2,783</td><td class="num">934</td><td class="num">1,761</td><td class="num">88</td><td class="num">33.6%</td><td class="num neg">&minus;975.3</td><td class="num neg">&minus;0.350</td><td class="num neg">&minus;75.0</td><td class="num">979R</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="color:var(--ink-3); font-size:13.5px; margin-top:10px">Gold covers 3.2 years (652 and 606
+  trades); every other row covers 12&ndash;14 years. Gold's confidence intervals all include zero — its
+  positive numbers are <b>not</b> yet evidence.</p>
+
+  <figure style="margin-top:26px">
+    <h3 style="margin-bottom:4px">Expectancy per trade, by market and session</h3>
+    <p style="font-size:13.5px; color:var(--ink-2); margin-bottom:14px">After costs. Zero line is the
+    break-even point.</p>
+    <svg viewBox="0 0 860 300" role="img" aria-label="Expectancy per trade in R by market and session, after costs">
+      <!-- scale: -0.40 .. +0.15 across x=250..830 ; zero at x = 250 + (0.40/0.55)*580 = 671.8 -->
+      <g class="mono" font-size="10.5" fill="var(--ink-3)">
+        <line x1="250" y1="248" x2="830" y2="248" stroke="var(--rule-2)" stroke-width="1"/>
+        <line x1="250" y1="16" x2="250" y2="252" stroke="var(--rule)" stroke-width="1"/><text x="250" y="266" text-anchor="middle">&minus;0.40</text>
+        <line x1="355.5" y1="16" x2="355.5" y2="252" stroke="var(--rule)" stroke-width="1"/><text x="355.5" y="266" text-anchor="middle">&minus;0.30</text>
+        <line x1="460.9" y1="16" x2="460.9" y2="252" stroke="var(--rule)" stroke-width="1"/><text x="460.9" y="266" text-anchor="middle">&minus;0.20</text>
+        <line x1="566.4" y1="16" x2="566.4" y2="252" stroke="var(--rule)" stroke-width="1"/><text x="566.4" y="266" text-anchor="middle">&minus;0.10</text>
+        <line x1="777.3" y1="16" x2="777.3" y2="252" stroke="var(--rule)" stroke-width="1"/><text x="777.3" y="266" text-anchor="middle">+0.10</text>
+      </g>
+      <line x1="671.8" y1="10" x2="671.8" y2="252" stroke="var(--ink-2)" stroke-width="1.6"/>
+      <text x="671.8" y="284" text-anchor="middle" class="mono" font-size="11" font-weight="700" fill="var(--ink-2)">break&#8209;even</text>
+
+      <g font-family="Source Sans 3" font-size="12.5" fill="var(--ink)">
+        <!-- Nasdaq NQ  +0.105 -> 671.8 .. 782.5 -->
+        <text x="242" y="27" text-anchor="end">Nasdaq &middot; NQ cost</text>
+        <rect x="671.8" y="15" width="110.7" height="18" rx="4" fill="var(--good)"/>
+        <text x="789" y="28" class="mono" font-size="11.5" font-weight="700" fill="var(--good)">+0.105</text>
+
+        <!-- Gold COMEX +0.055 -->
+        <text x="242" y="59" text-anchor="end">Gold &middot; COMEX 08:20</text>
+        <rect x="671.8" y="47" width="58" height="18" rx="4" fill="var(--good)" opacity=".55"/>
+        <text x="736" y="60" class="mono" font-size="11.5" font-weight="700" fill="var(--ink-2)">+0.055</text>
+
+        <!-- Gold cash +0.047 -->
+        <text x="242" y="91" text-anchor="end">Gold &middot; US 09:30</text>
+        <rect x="671.8" y="79" width="49.6" height="18" rx="4" fill="var(--good)" opacity=".55"/>
+        <text x="728" y="92" class="mono" font-size="11.5" font-weight="700" fill="var(--ink-2)">+0.047</text>
+
+        <!-- Nasdaq CFD -0.001 -->
+        <text x="242" y="123" text-anchor="end">Nasdaq &middot; CFD measured</text>
+        <rect x="670.7" y="111" width="1.1" height="18" fill="var(--neutral)"/>
+        <text x="664" y="124" text-anchor="end" class="mono" font-size="11.5" font-weight="700" fill="var(--ink-2)">&minus;0.001</text>
+
+        <!-- US500 -0.122 -->
+        <text x="242" y="155" text-anchor="end">S&amp;P 500 &middot; US 09:30</text>
+        <rect x="543.2" y="143" width="128.6" height="18" rx="4" fill="var(--crit)"/>
+        <text x="535" y="156" text-anchor="end" class="mono" font-size="11.5" font-weight="700" fill="var(--crit)">&minus;0.122</text>
+
+        <!-- EURUSD -0.211 -->
+        <text x="242" y="187" text-anchor="end">EURUSD &middot; London</text>
+        <rect x="449.3" y="175" width="222.5" height="18" rx="4" fill="var(--crit)"/>
+        <text x="441" y="188" text-anchor="end" class="mono" font-size="11.5" font-weight="700" fill="var(--crit)">&minus;0.211</text>
+
+        <!-- GBPUSD -0.350 -->
+        <text x="242" y="219" text-anchor="end">GBPUSD &middot; London</text>
+        <rect x="302.7" y="207" width="369.1" height="18" rx="4" fill="var(--crit)"/>
+        <text x="294" y="220" text-anchor="end" class="mono" font-size="11.5" font-weight="700" fill="var(--crit)">&minus;0.350</text>
+      </g>
+    </svg>
+    <figcaption>Gold's two bars are faded because its confidence intervals include zero on 3.2 years of
+    data. The gap between the two Nasdaq bars is the entire question in this programme: it is not a
+    modelling choice, it is one missing dataset.</figcaption>
+  </figure>
+
+  <figure style="margin-top:26px">
+    <h3 style="margin-bottom:4px">Nasdaq candidate &mdash; net R per trade, by year</h3>
+    <p style="font-size:13.5px; color:var(--ink-2); margin-bottom:14px">NQ futures cost sizing. Positive
+    in 11 of 13 years, and strengthening.</p>
+    <svg viewBox="0 0 860 230" role="img" aria-label="Net R per trade by year for the Nasdaq candidate">
+      <!-- y scale: -0.20 .. +0.35 over y=180..20 ; zero at y = 180 - (0.20/0.55)*160 = 121.8 -->
+      <g class="mono" font-size="10.5" fill="var(--ink-3)">
+        <line x1="46" y1="121.8" x2="852" y2="121.8" stroke="var(--ink-2)" stroke-width="1.4"/>
+        <line x1="46" y1="20" x2="852" y2="20" stroke="var(--rule)" stroke-width="1"/><text x="40" y="24" text-anchor="end">+0.35</text>
+        <line x1="46" y1="70.9" x2="852" y2="70.9" stroke="var(--rule)" stroke-width="1"/><text x="40" y="75" text-anchor="end">+0.175</text>
+        <text x="40" y="126" text-anchor="end" font-weight="700" fill="var(--ink-2)">0</text>
+        <line x1="46" y1="180" x2="852" y2="180" stroke="var(--rule)" stroke-width="1"/><text x="40" y="184" text-anchor="end">&minus;0.20</text>
+      </g>
+      <g>
+        <!-- 13 bars, x from 56, pitch 61, width 44 -->
+        <rect x="56"  y="121.8" width="44" height="54.9" rx="3" fill="var(--crit)"/>
+        <rect x="117" y="121.8" width="44" height="1.7"  rx="1" fill="var(--crit)"/>
+        <rect x="178" y="113.7" width="44" height="8.1"  rx="3" fill="var(--s1)" opacity=".55"/>
+        <rect x="239" y="93.3"  width="44" height="28.5" rx="3" fill="var(--s1)" opacity=".55"/>
+        <rect x="300" y="118.6" width="44" height="3.2"  rx="2" fill="var(--s1)" opacity=".55"/>
+        <rect x="361" y="78.7"  width="44" height="43.1" rx="3" fill="var(--s1)" opacity=".55"/>
+        <rect x="422" y="85.2"  width="44" height="36.6" rx="3" fill="var(--s1)" opacity=".55"/>
+        <rect x="483" y="101.2" width="44" height="20.6" rx="3" fill="var(--s1)" opacity=".55"/>
+        <rect x="544" y="74.4"  width="44" height="47.4" rx="3" fill="var(--s1)"/>
+        <rect x="605" y="42.1"  width="44" height="79.7" rx="3" fill="var(--s1)"/>
+        <rect x="666" y="30.2"  width="44" height="91.6" rx="3" fill="var(--s1)"/>
+        <rect x="727" y="85.2"  width="44" height="36.6" rx="3" fill="var(--s1)"/>
+        <rect x="788" y="38.0"  width="44" height="83.8" rx="3" fill="var(--s1)"/>
+      </g>
+      <g class="mono" font-size="10" fill="var(--ink-3)" text-anchor="middle">
+        <text x="78" y="194">14</text><text x="139" y="194">15</text><text x="200" y="194">16</text>
+        <text x="261" y="194">17</text><text x="322" y="194">18</text><text x="383" y="194">19</text>
+        <text x="444" y="194">20</text><text x="505" y="194">21</text><text x="566" y="194">22</text>
+        <text x="627" y="194">23</text><text x="688" y="194">24</text><text x="749" y="194">25</text>
+        <text x="810" y="194">26</text>
+      </g>
+      <line x1="527" y1="206" x2="527" y2="14" stroke="var(--ink-3)" stroke-width="1" stroke-dasharray="4 4"/>
+      <text x="519" y="218" text-anchor="end" font-family="Archivo" font-size="11" fill="var(--ink-3)">development &#8804;2021</text>
+      <text x="535" y="218" font-family="Archivo" font-size="11" fill="var(--ink-3)">holdout 2022&#8211;26</text>
+      <text x="672" y="26" class="mono" font-size="11" font-weight="700" fill="var(--s1)">+0.315</text>
+    </svg>
+    <figcaption><b>This is the chart I would want an SVP to interrogate.</b> Development averages
+    +0.035R; holdout averages +0.229R. An effect that is six times stronger out-of-sample is not
+    reassuring — it suggests something recent, or something we have not isolated. It is a reason to
+    get the real data, not a reason to trust the result.</figcaption>
+  </figure>
+</section>
+
+<!-- ============ 07 CONFIDENCE ============ -->
+<section>
+  <div class="sechead"><span class="n">07</span><h2>What is settled, what is not, what is unknown</h2></div>
+  <div class="grid g3" style="align-items:start">
+    <div class="statuscol">
+      <h3><i class="dot" style="background:var(--good)"></i>Settled</h3>
+      <ul class="clean">
+        <li><b>The retest is the strongest entry in every market tested.</b> Positive in 16 of 18 cells, significant in 9, and positive in gross terms on all five markets.</li>
+        <li><b>A completed close destroys information.</b> A touch beats a close in 13 of 18 cells. Confirmed on four markets independently.</li>
+        <li><b>Cost is a property of the stop, not of the strategy.</b> Range-derived stops cut cost from 28% to 4&ndash;18% of risk.</li>
+        <li><b>Instrument economics decide the outcome.</b> GBPUSD has the largest gross effect in the panel and the worst net result.</li>
+        <li><b>180 minutes is not a constraint.</b> It captures 76% of the day's available move; median hold is 66 minutes.</li>
+      </ul>
+    </div>
+    <div class="statuscol">
+      <h3><i class="dot" style="background:var(--warn)"></i>Still to clarify</h3>
+      <ul class="clean">
+        <li><b>Does the Nasdaq candidate survive on real futures?</b> +0.105R on assumed futures costs, &minus;0.001R on measured CFD costs. One dataset settles it.</li>
+        <li><b>Why is holdout six times stronger than development?</b> Unexplained. Could be regime, could be something we have not isolated.</li>
+        <li><b>Is gold real?</b> Best 2R geometry in the panel and the cheapest costs, but 3.2 years and every interval includes zero.</li>
+        <li><b>Selection risk.</b> 72 behavioural measurements and ~40 constructed variants were examined. One positive is what chance alone would produce.</li>
+      </ul>
+    </div>
+    <div class="statuscol">
+      <h3><i class="dot" style="background:var(--crit)"></i>Unknown &mdash; no data at all</h3>
+      <ul class="clean">
+        <li><b>BOS / CHOCH and any market-structure framework.</b> Never researched, never tested. No opinion available.</li>
+        <li><b>Options.</b> No contract data exists anywhere in our store. Nothing here is evidence for or against an options implementation.</li>
+        <li><b>True futures execution.</b> NQ, MNQ, ES, MES, GC, MGC — none held. All index and gold results are proxies.</li>
+        <li><b>Live behaviour.</b> Zero forward or live trades. Slippage on a real breakout fill is modelled, not observed.</li>
+        <li><b>Gold spread.</b> No ask-side series, so gold's spread is assumed, never measured.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 08 DIRECTION ============ -->
+<section>
+  <div class="sechead"><span class="n">08</span><h2>Direction from here</h2></div>
+
+  <div class="note ok">
+    <h3>The recommendation is to spend money on data, not on more analysis</h3>
+    <p>The only live candidate sits between <b>+0.105R</b> and <b>&minus;0.001R</b> depending entirely on
+    which instrument's costs apply. <b>That gap is a missing dataset, not a modelling question.</b> No
+    further behavioural work, no additional market and no extra filter can close it — and I have
+    recommended against all three.</p>
+  </div>
+
+  <div class="grid g3" style="margin-top:20px">
+    <div class="tile">
+      <div class="k">Priority 1</div>
+      <div class="v" style="font-size:20px">NQ / MNQ 1-min history</div>
+      <div class="d">Decides the only live candidate. Re-run the existing tests unchanged on native data; if it holds, it advances to full validation.</div>
+    </div>
+    <div class="tile">
+      <div class="k">Priority 2</div>
+      <div class="v" style="font-size:20px">GC / MGC 1-min history</div>
+      <div class="d">Decides gold, which has the best 2R geometry and cheapest costs in the panel and is blocked only by a short proxy sample.</div>
+    </div>
+    <div class="tile">
+      <div class="k">Explicitly not recommended</div>
+      <div class="v" style="font-size:20px">More markets or filters</div>
+      <div class="d">Five markets already answer the behavioural question consistently. Adding more raises selection risk without adding information.</div>
+    </div>
+  </div>
+
+  <div style="margin-top:24px; background:var(--surface); border:1px solid var(--rule); border-radius:10px; padding:20px">
+    <h3 style="margin-bottom:10px">Standing position on the existing FX control</h3>
+    <p style="color:var(--ink-2); font-size:15.5px">The live FX ORB control (00:00&ndash;08:00 range,
+    ATR buffer, opposite-side stop, 16:00 exit, roughly <span class="mono">+0.049R</span>) is
+    <b>unchanged and was never pooled with any of this work</b>. Nothing found here justifies modifying
+    it. The structural contrast in fact supports its design: an eight-hour range with an opposite-side
+    stop produces a risk unit large enough to absorb FX commission — a fifteen-minute opening range
+    does not. That is the same mechanism that explains why Nasdaq works where the S&amp;P 500 does not.</p>
+  </div>
+</section>
+
+<p style="color:var(--ink-3); font-size:13px; border-top:1px solid var(--rule); padding-top:18px">
+Sources: <span class="mono">13_CROSS_MARKET/OUTPUTS/SENIOR_MANAGEMENT_REPORT.md</span>,
+<span class="mono">09_VALIDATION/COSTS/COST_RECONCILIATION.md</span>,
+<span class="mono">10_ANALYST_OUTPUTS/ANALYST_DECISION_REPORT.md</span>.
+All figures are historical simulation on 1-minute data. No live trades exist.
+</p>
+
+</div>
+
+</body>
+</html>

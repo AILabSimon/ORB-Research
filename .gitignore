@@ -1,0 +1,18 @@
+# Raw and derived market data — never committed (see RESEARCH_CURRENT.md, brief 20.1)
+06_DATA/
+07_BEHAVIOURAL_CENSUS/RESULTS/
+08_EXPERIMENTS/**/RESULTS/
+13_CROSS_MARKET/CENSUS/RESULTS/
+13_CROSS_MARKET/WORK/
+*.parquet
+*.pkl
+*.h5
+*.zip
+# Large tabular outputs
+*.csv
+!02_EVIDENCE/*.csv
+# Python artefacts
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/

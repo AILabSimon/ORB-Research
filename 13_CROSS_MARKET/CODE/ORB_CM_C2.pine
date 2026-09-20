@@ -1,0 +1,254 @@
+//@version=6
+// =====================================================================================
+// ORB CM-C2 — opening-range retest, with the cost/R gate
+// ORB Programme · Analyst Agent · 17 Sep 2026
+//
+// PURPOSE: this is a VERIFICATION INSTRUMENT, not a deployable strategy.
+// Research on 10.7 years of 1-minute data says this does NOT have a positive
+// expectancy once entries are filled at prices that actually traded:
+//
+//     pooled NAS100 + US500 + XAUUSD, registered round-trip costs, cost/R <= 0.15
+//       limit in the tolerance band .......... -0.026R   CI [-0.066, +0.015]
+//       limit exactly at the ORB edge ........ -0.066R   CI [-0.148, +0.020]
+//
+// The +0.129R figure previously reported came from a research convention that filled
+// every retest at the ORB edge even when price only came within 0.10 x W of it.
+// Only 25.8% of retests actually reach the edge. That convention cannot be expressed
+// in Pine at all, because TradingView will not fill a limit at a price the bar never
+// traded through — which is itself the proof that the figure was not real.
+//
+// Run this to confirm the negative result independently, on TradingView's own data.
+//
+// REQUIREMENTS
+//   * 1-minute chart
+//   * Set Properties -> Commission and Slippage to match your instrument. The research
+//     used these REGISTERED round-trip costs (spread on both legs + slippage):
+//         NAS100  2.92 index points     US500  1.26      XAUUSD 0.75
+//         EURUSD  2.7 pips              GBPUSD 4.9 pips  (both eliminated by the gate)
+//     The `Round-trip cost` input below drives the GATE only; the tester's P&L comes
+//     from the Properties tab, so set both.
+//
+// SPEC (frozen CM-C1 + the D-032 gate)
+//   Opening range   09:30-09:59 New York, wick to wick.  W = high - low,  R = 0.5 * W
+//   Gate            take the day only if  cost / R <= 0.15,  i.e.  W >= 13.33 x cost
+//   Direction       first 30-minute block after 10:00 whose CLOSE is beyond the range
+//   Entry           resting limit back at the range edge, valid 60 minutes
+//   Stop            range edge -/+ 0.5 * W  (the opening-range midline)
+//   Target          extreme reached since 10:00, floored at 2R, capped at 4R
+//   Breakeven/trail once +1R is seen, stop trails to (extreme - 1R), never worse than entry
+//   Max hold        180 minutes.  Flat by 16:00.  One trade per day.
+// =====================================================================================
+
+strategy("ORB CM-C2 — opening-range retest with cost/R gate",
+     overlay              = true,
+     initial_capital      = 100000,
+     default_qty_type     = strategy.fixed,
+     default_qty_value    = 1,
+     pyramiding           = 0,
+     calc_on_every_tick   = false,
+     process_orders_on_close = false)
+
+// ------------------------------------------------------------------ inputs
+grpS = "Session (exchange local time of the chart's symbol is NOT used — NY is forced)"
+tz            = input.string("America/New_York", "Session timezone", group=grpS)
+rangeStartHr  = input.int(9,  "Range start hour",   minval=0, maxval=23, group=grpS)
+rangeStartMin = input.int(30, "Range start minute", minval=0, maxval=59, group=grpS)
+rangeLenMin   = input.int(30, "Range length (min)", minval=5,            group=grpS)
+sessEndHr     = input.int(16, "Flat by (hour)",     minval=1, maxval=23, group=grpS)
+
+grpR = "Rules"
+blockMin    = input.int(30,   "Direction block length (min)", minval=1,   group=grpR)
+tolPct      = input.float(0.10, "Retest tolerance (x W)", minval=0, step=0.01, group=grpR)
+stopFrac    = input.float(0.50, "Stop distance (x W)",    minval=0.05, step=0.05, group=grpR)
+maxWaitMin  = input.int(60,   "Max wait, direction to entry (min)", minval=1, group=grpR)
+maxHoldMin  = input.int(180,  "Max hold (min)", minval=5, group=grpR)
+tpMinR      = input.float(2.0, "Target floor (R)", minval=0.5, step=0.5, group=grpR)
+tpCapR      = input.float(4.0, "Target cap (R)",   minval=1.0, step=0.5, group=grpR)
+trailFromR  = input.float(1.0, "Arm trail at (R)", minval=0.1, step=0.1, group=grpR)
+
+grpG = "Cost gate (D-032)"
+costPts     = input.float(2.92, "Round-trip cost, in price points", minval=0.0, step=0.01, group=grpG,
+     tooltip="NAS100 2.92 · US500 1.26 · XAUUSD 0.75 · EURUSD 0.00027 · GBPUSD 0.00049")
+maxCostR    = input.float(0.15, "Max cost / R (0 disables the gate)", minval=0.0, step=0.01, group=grpG)
+
+grpF = "Fill convention"
+fillMode    = input.string("Tolerance band", "Where the limit rests",
+     options=["Tolerance band", "Edge (touch only)"], group=grpF,
+     tooltip="Tolerance band = limit at edge +/- tolerance; fills on almost every retest at a worse price. Edge = limit exactly at the range edge; fills on about 26% of retests at the better price. Research says both are negative.")
+
+grpV = "Display"
+showRange   = input.bool(true, "Shade the opening range", group=grpV)
+showLevels  = input.bool(true, "Plot entry / stop / target", group=grpV)
+showTable   = input.bool(true, "Show the daily state table", group=grpV)
+
+if timeframe.period != "1"
+    runtime.error("This strategy requires a 1-minute chart. The 30-minute direction block and the 60/180-minute clocks are counted in 1-minute bars.")
+
+// ------------------------------------------------------------------ clock
+nyH   = hour(time, tz)
+nyM   = minute(time, tz)
+mins  = nyH * 60 + nyM
+nyDay = dayofmonth(time, tz)
+newDay = nyDay != nyDay[1]
+
+r0   = rangeStartHr * 60 + rangeStartMin
+r1   = r0 + rangeLenMin
+sEnd = sessEndHr * 60
+
+inRange   = mins >= r0 and mins < r1
+afterRange= mins >= r1 and mins < sEnd
+
+// ------------------------------------------------------------------ state
+var float rHigh   = na
+var float rLow    = na
+var float W       = na
+var bool  gateOK  = false
+var int   dir     = 0        // 0 none, 1 long, -1 short
+var int   confMin = na
+var bool  tradedToday = false
+var float runHi   = na       // extreme since the range closed
+var float runLo   = na
+var float edge    = na
+var float stopLvl = na
+var float tgtLvl  = na
+var float rSize   = na
+var float trail   = na
+var bool  armed   = false
+var int   entryBarIdx = na
+var bool  ordered = false
+
+if newDay
+    rHigh   := na
+    rLow    := na
+    W       := na
+    gateOK  := false
+    dir     := 0
+    confMin := na
+    tradedToday := false
+    runHi   := na
+    runLo   := na
+    edge    := na
+    stopLvl := na
+    tgtLvl  := na
+    rSize   := na
+    trail   := na
+    armed   := false
+    entryBarIdx := na
+    ordered := false
+
+// ---- build the opening range
+if inRange
+    rHigh := na(rHigh) ? high : math.max(rHigh, high)
+    rLow  := na(rLow)  ? low  : math.min(rLow,  low)
+
+// ---- freeze it and apply the gate on the first bar after the range
+if mins == r1 and not na(rHigh) and not na(rLow)
+    W      := rHigh - rLow
+    gateOK := W > 0 and (maxCostR <= 0 or (costPts / (stopFrac * W)) <= maxCostR)
+    runHi  := high
+    runLo  := low
+
+// ---- running extreme since the range closed (drives the target)
+if afterRange and mins > r1
+    runHi := na(runHi) ? high : math.max(runHi, high)
+    runLo := na(runLo) ? low  : math.min(runLo, low)
+
+// ---- direction: close of a 30-minute block beyond the range
+blockEnd = afterRange and W > 0 and ((mins - r1) % blockMin) == (blockMin - 1)
+if blockEnd and dir == 0 and gateOK
+    if close > rHigh
+        dir     := 1
+        edge    := rHigh
+        confMin := mins
+    else if close < rLow
+        dir     := -1
+        edge    := rLow
+        confMin := mins
+
+// ---- place / cancel the resting limit
+tol      = tolPct * W
+limitPx  = fillMode == "Edge (touch only)" ? edge : (dir == 1 ? edge + tol : edge - tol)
+windowOK = dir != 0 and not na(confMin) and (mins - confMin) <= maxWaitMin and mins < sEnd
+
+if dir != 0 and not tradedToday and strategy.position_size == 0
+    if windowOK and not ordered
+        if dir == 1
+            strategy.entry("ORB", strategy.long,  limit=limitPx)
+        else
+            strategy.entry("ORB", strategy.short, limit=limitPx)
+        ordered := true
+    if not windowOK and ordered
+        strategy.cancel("ORB")
+        ordered := false
+
+// ---- on fill: fix the stop, the R size and the target
+justFilled = strategy.position_size != 0 and strategy.position_size[1] == 0
+if justFilled
+    tradedToday  := true
+    entryBarIdx  := bar_index
+    armed        := false
+    float ep     = strategy.position_avg_price
+    stopLvl := dir == 1 ? edge - stopFrac * W : edge + stopFrac * W
+    rSize   := math.abs(ep - stopLvl)
+    trail   := stopLvl
+    float ext  = dir == 1 ? runHi : runLo
+    float dist = (ext - ep) * dir
+    float tR   = dist > 0 ? math.min(math.max(dist / rSize, tpMinR), tpCapR) : tpMinR
+    tgtLvl  := ep + dir * tR * rSize
+
+// ---- manage the open position
+if strategy.position_size != 0 and not na(rSize) and rSize > 0
+    float ep  = strategy.position_avg_price
+    float fav = dir == 1 ? (high - ep) : (ep - low)
+    if fav >= trailFromR * rSize
+        armed := true
+        float nt = dir == 1 ? (high - trailFromR * rSize) : (low + trailFromR * rSize)
+        trail := dir == 1 ? math.max(trail, nt, ep) : math.min(trail, nt, ep)
+    strategy.exit("X", "ORB", stop=trail, limit=tgtLvl)
+
+    if (bar_index - entryBarIdx) >= maxHoldMin
+        strategy.close("ORB", comment="time")
+    if mins >= sEnd
+        strategy.close("ORB", comment="eod")
+
+if strategy.position_size == 0 and ordered and mins >= sEnd
+    strategy.cancel("ORB")
+    ordered := false
+
+// ------------------------------------------------------------------ drawing
+pHi = showRange and not na(W) and mins >= r1 and mins < sEnd ? rHigh : na
+pLo = showRange and not na(W) and mins >= r1 and mins < sEnd ? rLow  : na
+p1 = plot(pHi, "ORB high", color=gateOK ? color.new(color.teal, 0) : color.new(color.gray, 40), style=plot.style_linebr, linewidth=2)
+p2 = plot(pLo, "ORB low",  color=gateOK ? color.new(color.teal, 0) : color.new(color.gray, 40), style=plot.style_linebr, linewidth=2)
+fill(p1, p2, color=gateOK ? color.new(color.teal, 92) : color.new(color.gray, 95))
+
+inPos = strategy.position_size != 0
+plot(showLevels and inPos ? strategy.position_avg_price : na, "Entry",  color=color.new(color.blue, 0),   style=plot.style_linebr, linewidth=1)
+plot(showLevels and inPos ? trail   : na, "Stop / trail", color=color.new(color.red, 0),    style=plot.style_linebr, linewidth=1)
+plot(showLevels and inPos ? tgtLvl  : na, "Target",       color=color.new(color.green, 0),  style=plot.style_linebr, linewidth=1)
+
+bgcolor(not na(W) and not gateOK and mins >= r1 and mins < sEnd ? color.new(color.red, 94) : na, title="Gate failed")
+
+if showTable and barstate.islast
+    var table t = table.new(position.top_right, 2, 7, border_width=1)
+    table.cell(t, 0, 0, "ORB CM-C2", bgcolor=color.new(color.gray, 80), text_size=size.small)
+    table.cell(t, 1, 0, fillMode,     bgcolor=color.new(color.gray, 80), text_size=size.small)
+    table.cell(t, 0, 1, "Range width W", text_size=size.small)
+    table.cell(t, 1, 1, na(W) ? "-" : str.tostring(W, format.mintick), text_size=size.small)
+    table.cell(t, 0, 2, "R = " + str.tostring(stopFrac) + " x W", text_size=size.small)
+    table.cell(t, 1, 2, na(W) ? "-" : str.tostring(stopFrac * W, format.mintick), text_size=size.small)
+    table.cell(t, 0, 3, "cost / R", text_size=size.small)
+    table.cell(t, 1, 3, na(W) or W <= 0 ? "-" : str.tostring(costPts / (stopFrac * W), "#.###"), text_size=size.small)
+    table.cell(t, 0, 4, "Gate (<= " + str.tostring(maxCostR) + ")", text_size=size.small)
+    table.cell(t, 1, 4, gateOK ? "PASS" : "BLOCKED", text_size=size.small,
+         bgcolor=gateOK ? color.new(color.green, 70) : color.new(color.red, 70))
+    table.cell(t, 0, 5, "Direction", text_size=size.small)
+    table.cell(t, 1, 5, dir == 1 ? "long" : dir == -1 ? "short" : "none", text_size=size.small)
+    table.cell(t, 0, 6, "Min. W for the gate", text_size=size.small)
+    table.cell(t, 1, 6, maxCostR <= 0 ? "n/a" : str.tostring(costPts / (stopFrac * maxCostR), format.mintick), text_size=size.small)
+
+// ------------------------------------------------------------------ expected result
+// On NAS100 1-minute, 2016 to date, Properties slippage+commission set to 2.92 points
+// round trip, gate at 0.15, tolerance-band fills: expect roughly break-even to slightly
+// negative, around -0.01R per trade over ~1,300 trades, with a max drawdown near 50R.
+// If you see materially better than that, the fills are the first thing to check.

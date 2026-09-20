@@ -1,0 +1,80 @@
+[
+  {
+    "market": "GBPUSD",
+    "event": "LON0800",
+    "L": 5,
+    "rows": 3160,
+    "excluded": 18,
+    "ohlc_dropped": 0,
+    "src": "/sessions/rcw-01jxhhdukyw1kdmxm4w9vjvi/mnt/Dukascopy/GBPUSD_1M.csv",
+    "sha256": "a0e397f9a88439368dc6a1604eb44f71ddcba6de45237e10f54c2ee95bb1c1e8",
+    "tz": "Europe/London",
+    "repr": "SPOT (native)",
+    "unit": "pips"
+  },
+  {
+    "market": "GBPUSD",
+    "event": "LON0800",
+    "L": 15,
+    "rows": 3159,
+    "excluded": 19,
+    "ohlc_dropped": 0,
+    "src": "/sessions/rcw-01jxhhdukyw1kdmxm4w9vjvi/mnt/Dukascopy/GBPUSD_1M.csv",
+    "sha256": "a0e397f9a88439368dc6a1604eb44f71ddcba6de45237e10f54c2ee95bb1c1e8",
+    "tz": "Europe/London",
+    "repr": "SPOT (native)",
+    "unit": "pips"
+  },
+  {
+    "market": "GBPUSD",
+    "event": "LON0800",
+    "L": 30,
+    "rows": 3158,
+    "excluded": 20,
+    "ohlc_dropped": 0,
+    "src": "/sessions/rcw-01jxhhdukyw1kdmxm4w9vjvi/mnt/Dukascopy/GBPUSD_1M.csv",
+    "sha256": "a0e397f9a88439368dc6a1604eb44f71ddcba6de45237e10f54c2ee95bb1c1e8",
+    "tz": "Europe/London",
+    "repr": "SPOT (native)",
+    "unit": "pips"
+  },
+  {
+    "market": "GBPUSD",
+    "event": "CTRL1200",
+    "L": 5,
+    "rows": 3161,
+    "excluded": 17,
+    "ohlc_dropped": 0,
+    "src": "/sessions/rcw-01jxhhdukyw1kdmxm4w9vjvi/mnt/Dukascopy/GBPUSD_1M.csv",
+    "sha256": "a0e397f9a88439368dc6a1604eb44f71ddcba6de45237e10f54c2ee95bb1c1e8",
+    "tz": "Europe/London",
+    "repr": "SPOT (native)",
+    "unit": "pips"
+  },
+  {
+    "market": "GBPUSD",
+    "event": "CTRL1200",
+    "L": 15,
+    "rows": 3158,
+    "excluded": 20,
+    "ohlc_dropped": 0,
+    "src": "/sessions/rcw-01jxhhdukyw1kdmxm4w9vjvi/mnt/Dukascopy/GBPUSD_1M.csv",
+    "sha256": "a0e397f9a88439368dc6a1604eb44f71ddcba6de45237e10f54c2ee95bb1c1e8",
+    "tz": "Europe/London",
+    "repr": "SPOT (native)",
+    "unit": "pips"
+  },
+  {
+    "market": "GBPUSD",
+    "event": "CTRL1200",
+    "L": 30,
+    "rows": 3157,
+    "excluded": 21,
+    "ohlc_dropped": 0,
+    "src": "/sessions/rcw-01jxhhdukyw1kdmxm4w9vjvi/mnt/Dukascopy/GBPUSD_1M.csv",
+    "sha256": "a0e397f9a88439368dc6a1604eb44f71ddcba6de45237e10f54c2ee95bb1c1e8",
+    "tz": "Europe/London",
+    "repr": "SPOT (native)",
+    "unit": "pips"
+  }
+]
