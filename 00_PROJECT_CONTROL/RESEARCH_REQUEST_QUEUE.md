@@ -318,3 +318,80 @@ ever reset by a pre-entry invalidation, V2 has repeated V1's structural error an
 economics should not be run.
 
 **Mandatory visual check before Stage 9: VRC-01** (CeeWilli C1, ES1! 1m, 28 May 2026).
+
+---
+
+## 2026-09-20(c) — RESEARCH AGENT: RR-003 — ANSWER TO ANALYST_CURRENT §K1-K3, §E1
+
+**Files: `14_SECOND_SOURCE/OUTPUTS/RR-003.md`; `RESEARCH_CURRENT.md` is now v2.1.**
+
+### K1 — the qualifying return. **Do not tighten the threshold. Split the population.**
+Max teaches **two** entry models and says so when asked the exact question you are
+stuck on. Audience question, verbatim: *what do you do if it breaks out and doesn't
+retest?* → V12 36:39 "if you're waiting for a two candle close, or you waiting for
+retest, or are you waiting for market structure — there's a couple different ways to do
+it"; V12 37:09 "**you can enter on any close outside of orb** … **There's no correct
+answer.**"
+
+Your 58%-return-on-the-next-bar population is not the retest model failing a threshold.
+It is the **continuation model**, scored as if it were the retest model. Neither is
+being measured.
+
+- **R1 — RETEST arm.** The boundary must be interacted with on **>= 2 separate 1m
+  candles** (`low_i <= ORH <= high_i`) after the break and before the qualifying close.
+  Source-worded and **ordinal, not numeric**: "retest, **retest**" (V8 14:52), "the
+  **second** retest candle" (V8 11:50), "retest, **doji retest**" (V12 27:23), "pulls
+  back" (C2 03:34), VRC-01's 8 bars. A one-bar wick is never called a retest anywhere
+  in either corpus. There is no free number to search; the one-bar population is
+  excluded by construction.
+- **R2 — CONTINUATION arm.** No return required; enter on a close beyond the boundary
+  (V12 37:09, V12 05:44). Legitimate, explicitly taught, and **never tested as such**.
+Report R1 and R2 separately end to end. I am **not** ruling that R1 is "Max's rule" —
+he says outright there is no single correct entry. Anything beyond the >= 2 count (a
+depth of pullback, a time window, a higher bar count) has **no source support**.
+
+### K2 — fill/invalidation collision: **not a collision. Faithful. Do not patch.**
+V12 05:44 "**Anytime** we see a close back inside of orb **anywhere**, that's an
+invalidation." No grace period exists in the corpus. Your 49.4%-within-one-bar is a
+**finding about the setup**, and it is exactly what R1 predicts when the "retest" was a
+one-bar wick — **re-measure it under R1 before drawing anything from it.** A secondary
+arm starting invalidation at the bar after the fill is defensible (R-049); base case
+stays as built.
+
+### K3 — no prior-session extreme beyond entry: **no target, hold to invalidation.**
+That is Max's continuation rule, not a fallback — V12 29:25 "**You ride it until the
+invalidation**" (R-045, EXPLICIT REPEATED). CeeWilli's target menu is also wider than
+prior-session extremes (Asian high, 15-minute liquidity, unfilled weekly gap — C1
+05:07, C1 16:18); SPEC-12 implemented its narrowest member.
+**⚠ Treat this ruling with suspicion.** You report the no-target subset carries all the
+apparent gross (+0.2016R vs −0.0166R), so the faithful ruling and the profitable subset
+coincide — the shape a motivated reading takes. I am ruling on R-045's wording alone,
+which predates these numbers. Report that arm with its interval; do not headline it.
+
+### E1 — stop variant A: **the source supplies the fix you were missing.**
+R-050 was not implemented. Max prescribes a floor for exactly the degeneracy you found:
+V13 05:57 "The previous 20 candles had 15 to 20 point wicks, but you got a five-point
+stop-loss … **allow that 25 point stop loss**."
+**R3:** `stop_distance = max(|entry − reclaim extreme|, wick_floor)`, `wick_floor` = max
+wick over the previous 20 1m candles. Unfloored variant A is **half of Max's stop
+rule**. Please withdraw "not mechanisable" as a conclusion about the source and re-test
+with the floor. If it is still degenerate, that is a finding about Max.
+
+### One thing V2 did not build
+All four arms used *ENTRY SIGNAL = first later 1m close beyond the boundary → FILL at
+the next bar's open*. That is **CeeWilli's** trigger. **Max's was not built.** Max arms
+a **stop order at the reclaim candle's extreme** and fills only if the next bar trades
+through it (V10 24:18 "print through the previous candle"; V11 08:34 "the next candle's
+wick hit 308 and then go"). It is an extra filter, it produces **non-fills** (R-039 —
+so H10 cannot have passed), and it changes the fill price. Arms A and B differ only in
+the stop, so **the Max entry model is still untested.**
+
+### Priority for the re-run
+1. R1/R2 split — this is the representation gate. 2. R3 floor; re-test variant A.
+3. Build Max's print-through trigger (H10 must show non-fills). 4. K3 arm reported
+separately, not headlined. 5. K2 — leave; re-measure under R1.
+
+New acceptance tests **H15-H18** in `RESEARCH_CURRENT.md` §H cover all of the above.
+
+**Nothing in your §G is disputed.** Instrument choice looks decisive and no
+representation work changes that. The 1m NQ/ES bid+ask request is supported.

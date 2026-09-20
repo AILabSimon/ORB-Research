@@ -1,5 +1,7 @@
 # RESEARCH_CURRENT.md — SOURCE-FAITHFUL V2 SPECIFICATION
-Research Agent · v2.0 · 2026-09-20 · supersedes all earlier specification material
+Research Agent · **v2.1** · 2026-09-20 · supersedes all earlier specification material
+v2.1 incorporates the RR-003 rulings (retest/continuation split, MAX-S1 floor, Max
+print-through trigger). Changes are marked **[v2.1]**. Full reasoning: RR-003.
 Sources: @MaxOptionsTrading (V1-V14) · @CeewilliTradez (C1-C4). Evidence IDs in §J.
 
 Status of MODEL V1: retired as a representation of the source strategy.
@@ -54,6 +56,37 @@ population. They are different experiments and the first does not answer the sec
 number (R-027 / CL-021, "85 to 87%") arrives with no sample, no period and no
 definition of success. Neither author has ever published a denominator.
 
+## A.1 [v2.1] TWO ENTRY MODELS, NOT ONE — the retest/continuation split
+
+Max teaches **two** entry models and says so when asked directly. V2 v2.0 modelled only
+one of them, and by letting a one-bar touch satisfy the return it was in fact producing
+mostly the *other* one while scoring it as the first.
+
+> Audience question — *what do you do if it breaks out and doesn't retest?*
+> V12 36:39 — "if you're waiting for a **two candle close**, or you waiting for
+> **retest**, or are you waiting for **market structure** — there's a couple different
+> ways to do it … and they all have their own risk reward."
+> V12 37:09 — "**you can enter right here on this close. You don't have to wait for
+> this.** … **You can enter on any close outside of orb** … **There's no correct
+> answer. Just make sure that you have your risk reward.**"
+> V12 05:44 — two ways to long: "one, a **retracement back down to orb and then a
+> bounce up**; or two … a **continuation right to the upside**."
+
+| Arm | Return required | Source |
+|---|---|---|
+| **RETEST** | yes — S2 as redefined (>= 2 interacting bars) | V8 11:50, V8 14:52, V12 27:23, V12 06:46; CeeWilli C2 03:34, VRC-01 |
+| **CONTINUATION** | **none** — enter on a close beyond the boundary after the break | V12 37:09, V12 05:44 branch two |
+
+**Run them as separate arms, reported end to end. Pooled, the number describes
+neither.** The continuation arm has never been tested as such and is, on the Analyst's
+own figures, the majority of what V2 has been measuring.
+
+This is R-037 on the record — *there is no single correct entry, stated by the source*.
+It is the reason the answer to "what makes a retest qualify?" is **split the
+population**, not **raise the threshold**. There is no threshold in the sources to
+raise, and inventing one would be parameter mining.
+
+
 ---
 
 # B. SHARED-CORE STATE SEQUENCE
@@ -64,7 +97,7 @@ Every state below is EXPLICIT in **both** sources. Variant-specific detail is in
 |---|---|---|---|
 | **S0** | RANGE_SET | 09:45:00 ET | ORH = max(high), ORL = min(low) over 09:30:00-09:44:59, **wick to wick**. Midline = (ORH+ORL)/2. Pre-market excluded. (R-001, R-002, R-003, R-004, R-005; C1 02:33, C4 04:05) |
 | **S1** | BREAK | first completed candle whose **close** is beyond ORH (long bias) or ORL (short bias) | **Candle length is variant-specific** (§C.1 / §D.1). Establishes a **candidate direction**; does **NOT** authorise entry. (R-006, R-049; C1 08:59) |
-| **S2** | RETEST | after S1, price trades back to the broken edge | Price **may** close back inside the ORB, and **may do so repeatedly**. This does **not** cancel the setup. (Max V12 08:49; CeeWilli V-01: six consecutive 1m closes inside) |
+| **S2** | RETEST | **[v2.1]** the boundary is interacted with on **at least two separate 1-minute candles** — `low_i <= ORH <= high_i` (long) — after the break candle and before the qualifying close. They need not be consecutive. | **[v2.1]** A one-bar wick to the boundary is **not** a retest: "retest, **retest**" (V8 14:52), "the **second** retest candle" (V8 11:50), "retest, **doji retest**" (V12 27:23), "**pulls back**" (C2 03:34), V-01's 8 bars. Ordinal, not numeric — there is no threshold to search. Price **may** close back inside the ORB and **may do so repeatedly**; that does not cancel the setup (V12 08:49; V-01's six inside closes). |
 | **S3** | RECLAIM / REJECTION | first 1-minute candle after S2 whose **close** is again beyond the broken edge in the S1 direction | This is the object Max calls "the retest candle that failed and closed outside of orb" (V8 11:50) and the candle CeeWilli's "body stick candle closure" refers to. **A wick beyond the edge is NOT sufficient** (C4 05:36; visually verified, V-01 bar 10). |
 | **S4** | ENTRY | **variant-specific** — see §C.3 / §D.3 | Max: next candle prints through S3's extreme. CeeWilli: at S3's close. |
 | **X** | INVALIDATION (pre-entry) | see §B.1 | Reachable before S4 in both variants — this is the property V1 lacked. |
@@ -142,11 +175,18 @@ eight points away from [where] I wanted it").
 ## C.4 Stop
 | ID | Rule | Class | Observed |
 |---|---|---|---|
-| **MAX-S1** (base) | beyond the **S3 (reclaim) candle's opposite extreme** | EXPLICIT, REPEATED (R-040): V10 14:08 "Just that previous stop loss at candle low… Risking a total of nine points"; V11 39:05 "Stop loss goes under the candle" | NQ 6, 6, 9, 9, 9, 10, 16.5, 17 pts |
+| **MAX-S1** (base) **[v2.1: FLOORED by MAX-S2 — see R3 below]** | beyond the **S3 (reclaim) candle's opposite extreme** | EXPLICIT, REPEATED (R-040): V10 14:08 "Just that previous stop loss at candle low… Risking a total of nine points"; V11 39:05 "Stop loss goes under the candle" | NQ 6, 6, 9, 9, 9, 10, 16.5, 17 pts |
 | **MAX-S2** (alt) | sized to the **recent wick distribution** — if the last ~20 candles carry 15-20 pt wicks, use ~25 pts and size down to micros | EXPLICIT but ISOLATED (R-050, V13 05:57) | ~25 pts NQ |
 | — | entry back to the broken ORB edge | EXPLICIT but belongs to a **different entry** (the boundary entry, R-041/V12 31:58). Do **not** attach it to the print-through entry. | — |
 | — | 80 ticks | this is a **trail**, not an initial stop (R-031/R-053, corrected) | — |
 **Which of MAX-S1 / MAX-S2 is "the" rule is UNRESOLVED (§I, U-17).** Run both.
+
+**[v2.1] R3 — MAX-S1 is floored, never raw.** `stop_distance = max(|entry − reclaim
+extreme|, wick_floor)`. Max prescribes this floor himself, for exactly the
+degeneracy the Analyst found (R < 0.0002 x price on 20-26% of trades): V13 05:57 —
+"The previous 20 candles had 15 to 20 point wicks, but you got a five-point
+stop-loss … allow that 25 point stop loss." An unfloored MAX-S1 is **half of Max's
+stop rule**, not Max's stop rule.
 
 ## C.5 Target — no fixed multiple; two different trade families
 **Do not impose 1R. Max does not teach 1R.**
@@ -239,13 +279,16 @@ lookahead: every condition is evaluated only on bars at or before the decision b
 ```
 1  at 09:45 compute ORH, ORL, mid
 2  S1  first completed 15m candle with close > ORH            → dir = LONG, t_break
-3  S2  after t_break, on 1m: wait for low <= ORH              (touch of the edge)
+3  S2  after t_break, on 1m: require >= 2 SEPARATE bars with low <= ORH <= high
+       [v2.1] two interactions, not one touch. Need not be consecutive.
        closes back below ORH are PERMITTED and are counted, not fatal
 4  S3  first 1m candle after S2 with close > ORH              → reclaim candle r
 5  S4  arm a BUY STOP at high(r) + 1 tick
        if the next 1m candle trades >= that level  → FILL at that level
        if it does not                              → no trade this attempt; return to 3
-6  stop  MAX-S1: low(r) − 1 tick      |  MAX-S2: entry − wick_size(last 20 candles)
+6  stop  MAX-S1 [v2.1, FLOORED]: entry − max( entry − (low(r) − 1 tick) , wick_floor )
+         wick_floor = max wick length over the previous 20 1m candles (R-050)
+         MAX-S2: entry − wick_floor  (the floor alone)
 7  exit  no fixed target. Trail/trim at counter-structure; hard exit on the first 1m
          close back below ORH (§F.3). Day stop 11:30 ET. Flat at session close.
 ```
@@ -257,7 +300,8 @@ SHORT is the exact mirror: `close < ORL`, `high >= ORL`, `close < ORL`, SELL STO
 1  at 09:45 compute ORH, ORL, mid
 2  S1  first completed 1m candle with close > ORH             → dir = LONG, t_break
        record displacement diagnostics (close-beyond/W, body/W) — no threshold applied
-3  S2  after t_break, on 1m: wait for low <= ORH
+3  S2  after t_break, on 1m: require >= 2 SEPARATE bars with low <= ORH <= high
+       [v2.1] two interactions, not one touch. Need not be consecutive.
        closes back below ORH are PERMITTED and are counted, not fatal
 4  S3  first 1m candle after S2 with close > ORH              → reclaim candle r
 5  S4  ENTER at close(r); model the fill at open(r+1)
@@ -363,6 +407,10 @@ historical economics are computed.** Each is source-supported; the source is nam
 | H12 | **Variants are separate** | Max and CeeWilli arms are reported separately end to end. No blended arm exists in the output. | §A |
 | H13 | **Day stop** | No entry after 11:30 ET. | R-020 |
 | H14 | **VRC-01 reproduction** | Replay the 28 May 2026 ES session (or the nearest equivalent in our data) and confirm the CeeWilli arm produces an entry at the reclaim bar, not earlier. | §G |
+| **H15** | **[v2.1] Retest is multi-bar** | In the RETEST arm, 100% of entries have **>= 2 separate bars** with `low <= ORH <= high` in `[t_break, entry)`. Share of entries whose entire return was a single bar = **0%**. (v2.0 run: 58% returned on the very next bar.) | RR-003 R1 |
+| **H16** | **[v2.1] Continuation arm exists and is separate** | A CONTINUATION arm is built, run and reported with its own n, gross and interval. No arm pools retest and continuation trades. | RR-003 R2; V12 37:09 |
+| **H17** | **[v2.1] Max's entry trigger is built** | The Max arm arms a **stop order at the reclaim candle's extreme** and fills only when the next bar trades through it — not "fill at the next bar's open". H10 must then show a non-zero non-fill count. In the v2.0 run all four arms used CeeWilli's close trigger, so **the Max entry model is still untested.** | R-009, R-039; V10 24:18, V11 08:34 |
+| **H18** | **[v2.1] MAX-S1 is floored** | No trade has `R < wick_floor`. Trades with `R -> 0` and unbounded R-multiples (max 699R in the v2.0 run) must disappear. | RR-003 R3; V13 05:57 |
 
 **Reporting discipline for the first run** (restating what is already programme method,
 because it is easy to lose in a re-build): gross before net; full unselected
@@ -378,7 +426,7 @@ Recorded because the **source** does not settle them — not as a to-do list.
 | ID | Question | Status | Handling in V2 |
 |---|---|---|---|
 | U-11 | How much displacement is "a lot of displacement" (CeeWilli)? | Never quantified in C1-C4 | **No threshold.** Recorded as a diagnostic column only. |
-| U-12 | How close must the retest come to the edge? | Neither author states a tolerance | **DECLARED:** touch of the exact edge (`low <= ORH`). The alternative (a tick buffer) is rejected because it reintroduces V1's proximity error. |
+| U-12 | How close must the retest come to the edge, and for how long? | **[v2.1] RESOLVED on the count, still open on depth.** The count is source-worded (>= 2 interacting candles — RR-003 R1). No author states a **depth** of pullback or a tick tolerance. | **DECLARED:** exact-edge interaction (`low <= ORH <= high`), >= 2 bars. No tick buffer (reintroduces V1's proximity error). **No depth rule** — adding one would be parameter mining. |
 | U-13 | Maximum interval between break and entry? | Max caps the **day** (11:30), not the interval; CeeWilli caps nothing | **DECLARED:** none, other than the day stop. |
 | U-14 | Are multiple retests permitted? Does each re-arm? | Not addressed by either | **DECLARED:** yes, re-arming is permitted within the day; one **filled** entry per side per day. |
 | U-15 | May direction flip after one side has broken? | Max's "no confirmations" wording implies yes; he never says it | **DECLARED:** yes — both sides remain eligible. Flagged as the choice most likely to matter. |

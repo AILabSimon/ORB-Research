@@ -743,3 +743,66 @@ Gross first, full unselected population first.
 (D-031), and the confirmation-delay measurement as a *fill-timing* result. Note carefully that the
 −0.155R confirmation finding measured **one minute** of delay on V1 geometry; the source's "wait one
 more 15-minute candle" is a different object and is not pre-judged by it.
+
+## 2026-09-20 — D-050: MODEL V2 built to SPEC-SF-1. Acceptance case PASSES, population gate FAILS.
+Explicit state machine (`13_CROSS_MARKET/CODE/model_v2.py`): ORB 09:30–09:45 wick-to-wick → BREAK
+(1m close beyond boundary, no order) → RETURN (trade back to boundary; close inside permitted) →
+[REJ arm: rejection bar] → ENTRY SIGNAL (first later 1m close beyond) → FILL at the next bar's open →
+stop A (entry-bar extreme) or B (return-cluster extreme) → target = nearest prior-session extreme →
+post-entry invalidation on first close back inside → 11:30 expiry → one attempt per side.
+
+**Acceptance case V-01 (CeeWilli ES1! 28 May 2026): PASS.** Native ES 1m begins 2026-08-19, so run on
+US500 as the closest series (flagged proxy). Reproduced bar for bar: break 10:00, close back inside
+10:02, **wick above ORH with close inside at 10:02 and 10:05 correctly refused entry**, qualifying body
+close 10:07, fill 10:08 at the next open.
+
+**Population gate: FAIL.** Median break→fill is **5 minutes**; **31.1%** are the mechanical minimum of
+3; 58.0% return on the very next bar; 54.4% signal on the very next bar after that. The reference case
+is an 8-bar pullback with six closes back inside. **The "return" is satisfied by a one-bar wick — V1's
+"proximity became entry" defect arriving by a different route.** The 7–12-minute bucket (V-01-like) is
+17.8% of trades and its gross is −0.0016R.
+
+## 2026-09-20 — D-051: stop variant A is NOT MECHANISABLE on 1-minute bars
+"Beyond the entry bar's extreme" gives R→0 whenever that bar is small. R < 0.0002 × price on **20.5%**
+(NAS100) and **26.2%** (US500) of trades; maximum single-trade outcome **699R** on US500. The arm's
+mean is meaningless (1%-trimmed mean +1.10R). **Reported, not patched — a floor would be an invented
+rule.** Variant B carried forward; its median stop is 0.085–0.129% of price against the sources'
+0.076% (CeeWilli, on-screen) and ~0.10% (Max), so **variant B is faithful and variant A is not.**
+
+## 2026-09-20 — D-052: two further specification defects, flagged not resolved
+1. **SPEC-9 fill collides with SPEC-14 invalidation.** The fill is the next bar's open, which can land
+   back inside the range, so invalidation can fire immediately: **49.4%** of invalidation exits occur
+   within one bar of the fill.
+2. **SPEC-12 produces no target on 31.8% of trades.** Those trades carry the entire apparent gross:
+   **+0.2016R without a target vs −0.0166R with one** — i.e. the edge sits in trades that have no exit
+   rule but invalidation, stop and the close.
+
+## 2026-09-20 — D-053: V2 economics — gross indistinguishable from zero; CFDs cannot afford the spec
+BASE-B, full unselected population, 5,689 trades, 532/yr:
+
+| | n | gross | 95% CI | dev ≤2021 | val >2021 |
+|---|---|---|---|---|---|
+| NAS100 | 2,813 | +0.0654R | [−0.014, +0.149] | +0.071 | +0.059 |
+| US500 | 2,876 | +0.0406R | [−0.046, +0.134] | **−0.066** | **+0.167** |
+| POOLED | 5,689 | **+0.0528R** | **[−0.008, +0.113]** | +0.002 | +0.114 |
+
+Win 14.6%, mean winner +3.72R, mean loser −0.58R, median target 5.28R. MFE reach 2R **20.2%**, 3R 13.5%,
+4R 9.9%. Exits: invalidation 65.5% (−0.442R), stop 20.1% (−0.997R), target 9.2% (+2.615R), eod 5.2%
+(+5.819R). Other arms: REJ removes ~29% of trades and lowers gross.
+
+**cost/R median 0.277 → NET −0.8645R.** The source-faithful stop is ~0.1% of price; the measured CFD
+round trip is 0.025–0.04% of price. **SPEC-SF-1 is unaffordable on CFD proxies.** On 21 sessions of
+native futures, cost/R is **0.023 (NQ)** and 0.129 (ES) — roughly **8× better** than the proxy. This is
+the first result in the programme where instrument choice is decisive rather than cosmetic.
+
+## 2026-09-20 — D-054: STOP AND FLAG. Two blockers, no tuning.
+Per mandate stop conditions: representation cannot be made objective, and required data is unavailable.
+
+1. **Research ruling needed:** what distinguishes a qualifying return from a one-bar touch of the
+   boundary? Choosing a threshold ourselves is parameter mining and is refused.
+2. **Data needed:** 1-minute NQ (and ES) **bid + ask**, 2016 → present, documented roll. Section G of
+   ANALYST_CURRENT shows cost/R falls ~8× on native futures — the only change measured so far that
+   could make a ~0.05R gross edge tradeable.
+
+Until (1) is answered, V2's economics describe a five-minute compression around the boundary, **not the
+taught setup**, and must not be quoted as a test of the source method. `ANALYST_CURRENT.md` created.

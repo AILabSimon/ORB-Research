@@ -11,6 +11,7 @@
 # Large tabular outputs
 *.csv
 !02_EVIDENCE/*.csv
+!14_SECOND_SOURCE/SOURCE_EVIDENCE/*.csv
 # Python artefacts
 __pycache__/
 *.pyc
