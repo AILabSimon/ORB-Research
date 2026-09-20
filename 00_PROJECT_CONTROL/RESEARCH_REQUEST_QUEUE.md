@@ -395,3 +395,85 @@ New acceptance tests **H15-H18** in `RESEARCH_CURRENT.md` §H cover all of the a
 
 **Nothing in your §G is disputed.** Instrument choice looks decisive and no
 representation work changes that. The 1m NQ/ES bid+ask request is supported.
+
+---
+
+## 2026-09-20(d) — RESEARCH AGENT: CEEWILLI PRIMARY DOCUMENT AUDIT → RESEARCH_CURRENT v2.2
+
+**Files:** `14_SECOND_SOURCE/OUTPUTS/CEEWILLI_PLAYBOOK_AUDIT.md`; `RESEARCH_CURRENT.md`
+is now **v2.2**. Source: *The ORB Playbook*, Mind Over Markets / @ceewillii, 10pp,
+read in full. **Do not rebuild against v2.1.**
+
+### The one finding that matters most
+> "**Minimum 1:2 R:R. Never take a trade unless your target is at least 2x your stop
+> loss distance.**"
+
+That is a **hard pre-trade gate**, stated as a rule, on a page headed "Never take a
+trade unless". V2 has no such gate, so **V2 has been generating trades the author's own
+written rule forbids.** It also disposes of RR-003 K3 entirely: your "no target on
+31.8% of trades, and that subset carries all the apparent gross" cannot arise — under
+the source those are **not trades**. The motivated-reasoning risk I flagged is gone,
+because the suspicious population should never have been generated.
+
+### The source names its own primary model and tells you to test it alone
+Entry 02 (Break & Retest) is labelled "**the money entry**", "**HIGHEST PROBABILITY**",
+"**BEST ENTRY**". Day 2: "**Backtest Entry 2 (Break & Retest) only.**" Day 5-6:
+"**Focus on Entry 2 only.**" **The CeeWilli arm is Entry 02 and nothing else.**
+He has **four** models, not three: 01 Straight Break, 02 Break & Retest, 03 Liquidity
+Sweep, 04 Rejection Inside ORB. We had 03 and 04 conflated.
+
+### What I got wrong in v2.1, corrected
+1. **The >= 2-candle retest rule is MAX-ONLY.** CeeWilli gives **no candle count
+   anywhere**. I derived it from Max's words and let it sit in the shared core. Removed.
+   His selectivity comes from the **R:R gate**, not from counting bars.
+2. **U-16 is CLOSED.** CeeWilli has his own invalidation: "**If price returns back
+   inside the ORB, the setup is invalidated**" (Entry 01), close-not-touch confirmed by
+   Entry 04. Stop applying Max's rule "labelled as ours" — it is his.
+3. **"Targets never ORB-derived" was false.** True for Entries 01/02; Entries 03/04
+   explicitly target the **opposite ORB level**.
+4. **"CeeWilli never stops at the ORB edge" was false.** Entry 01: "stop just below the
+   ORB level". (Entry 02 — our arm — is unchanged: "just beyond the retest". CW-S1 is
+   now EXPLICIT, not just visual.)
+5. **The HTF bias veto is REMOVED.** Ten pages; bias appears once, in the pre-market
+   checklist, with no method, and gates **none** of the four models. It is video-only.
+
+### New states
+`DRAW (pre-market) → RANGE_SET → BREAK → PULLBACK → REJECTION → RR_GATE → ENTRY`
+DRAW and RR_GATE are real states — the target must be identified before entry because
+the gate cannot be evaluated without it. And **there is no "reclaim" in his playbook**;
+the state is REJECTION, defined mechanically by Entry 03: "a strong reversal candle
+**closes back on the correct side of the level**."
+
+### Two unresolved questions, both to be run as ARMS — do not choose
+- **U-22 (decisive).** After a genuine body close outside, may price close back **inside**
+  the ORB and still be an Entry-02 retest? Playbook: the ORH "**now acts as support**",
+  and a return inside **invalidates** (01) or flips you to the opposite trade (04). But
+  Entry 04's fake is defined as a **wick** through, which may not cover a prior body
+  close outside — and VRC-01 shows six inside closes then a long. **Arm (a) holds /
+  arm (b) deep.** This decides whether the VRC-01 population exists at all.
+- **U-23.** His own backtest instruction is "**on a 5-min chart**" (Day 2); VRC-01 is
+  1-minute. **Run both.** Bar size drives stop distance, which drives the gate.
+
+### Also new and mechanical
+"**Move to break even once at 1:1**" (run as an arm); "**Stop trading after two losses
+in a day**". Partials are hedged ("consider") — DISCRETIONARY, not implemented.
+Break quality adds "**full-bodied, high-volume**" — record `body/range` and
+`volume/median20` as **diagnostics only. No threshold. No filter.**
+
+### Arms on the CeeWilli side
+{1m, 5m} x {U-22 (a), (b)} x {BE on, off} = 8 cells. **Every dimension is a documented
+disagreement in the sources, not a parameter sweep. Report all 8; select none.**
+
+### Acceptance tests H19-H27 added. H19 and H21 are the gates.
+H19: the "no target" bucket must be **empty**. H21: if the CeeWilli generator enforces
+a candle count on the pullback, it is running Max's rule on the wrong author.
+
+### What this document does NOT contain
+**No worked examples. None.** No dated trade, no instrument, no prices, no outcome, no
+R achieved, no win rate, no sample, no period. The four diagrams are schematics drawn
+for the guide and I have not counted bars off them. It is a free lead-generation guide
+ending in a mentorship offer. "Highest probability" is his assertion, unevidenced.
+**Nothing here is evidence that the method works.** It is evidence about what the
+method *is* — which is all we asked it for.
+
+### Analyst is CLEARED to rebuild, against v2.2, Max and CeeWilli separately.
