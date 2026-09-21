@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
-CEEWILLI ENTRY-02 (BREAK & RETEST) — built to RESEARCH_CURRENT v2.2 §D / §E.2.
-Authority: v2.2 §D (rewritten) + §E.2 + §F + §H19-H27 + §I. Max rules are NOT used here.
-No optimisation, no thresholds, no filters. 8 cells = {1m,5m} x {HOLD,DEEP} x {BE off,BE on}.
+CEEWILLI ENTRY-02 (BREAK & RETEST) — built to RESEARCH_CURRENT v2.3 §D.11 / §E.2.
+Authority: v2.3 §D.11 (rewritten) + §E.2 + §F + §H19-H29 + §I. Max rules are NOT used here.
+No optimisation, no thresholds, no filters. 16 cells = {1m,5m} x {HOLD,DEEP} x {BE off,BE on}
+x {DRAW-NQ, DRAW-SQ}. Strict-nearest (v2.2) is WITHDRAWN and is not a cell (§D.11.2, H29).
 """
 import numpy as np, pandas as pd, mdload
 
@@ -73,13 +74,24 @@ def resample(g, tf):
 # ------------------------------------------------------------------ engine
 # permitted draw types BY TRADE DIRECTION. A 15m swing LOW is not an upside target for a
 # long, and a bearish FVG is not either. [implementation-defect fix, mandate 21]
-DRAW_OK = {1:{"prev_session_H","prev_day_H","NWOG_close","NWOG_open","15m_swingH","FVG_5m_up","FVG_15m_up"},
+# [v2.3 §D.11.3] Two permitted arms span the source's unranked-set ambiguity (classification
+# D, U-25). Strict-nearest (v2.2) is WITHDRAWN — a nearer non-qualifying level must never
+# veto the trade (H28); the engine scans outward and takes the first level that reaches 2R.
+DRAW_NQ = {1:{"prev_session_H","prev_day_H","NWOG_close","NWOG_open","15m_swingH","FVG_5m_up","FVG_15m_up"},
           -1:{"prev_session_L","prev_day_L","NWOG_close","NWOG_open","15m_swingL","FVG_5m_dn","FVG_15m_dn"}}
-# D.11 states a numbered hierarchy; E.2 pseudocode says "nearest". They conflict (see report).
-HIER = ["prev_session_H","prev_session_L","prev_day_H","prev_day_L","NWOG_close","NWOG_open",
-        "FVG_5m_up","FVG_5m_dn","FVG_15m_up","FVG_15m_dn","15m_swingH","15m_swingL"]
+# DRAW-SQ: prior-session structural levels only. FVGs excluded as targets (§D.11.3) — the
+# only FVG target the source names is "the next KEY fair value gap" and "key" is undefined;
+# the only FVG placed at a specific price (the ORB level) is named an entry confluence, not
+# a target (§D.11.1 pro tip).
+DRAW_SQ = {1:{"prev_session_H","prev_day_H","NWOG_close","NWOG_open","15m_swingH"},
+          -1:{"prev_session_L","prev_day_L","NWOG_close","NWOG_open","15m_swingL"}}
+DRAW_SET = {"NQ":DRAW_NQ, "SQ":DRAW_SQ}
 
-def run(inst, tf=1, u22="DEEP", be=False, draws=None, d=None, draw_rule="nearest"):
+def run(inst, tf=1, u22="DEEP", be=False, draws=None, d=None, draw_rule="NQ"):
+    """draw_rule: 'NQ' (all permitted types) or 'SQ' (prior-session structural only,
+    FVGs excluded) — the two v2.3 §D.11.3 draw arms. No other value is a valid cell."""
+    if draw_rule not in DRAW_SET: raise ValueError(f"draw_rule must be 'NQ' or 'SQ', got {draw_rule!r}")
+    DRAW_OK = DRAW_SET[draw_rule]
     if d is None: d = load_ny(inst)
     if draws is None: draws = build_draws(d)
     tick = TICK[inst]; cost = COST[inst]; rows=[]; rejects=[]
@@ -135,17 +147,19 @@ def run(inst, tf=1, u22="DEEP", be=False, draws=None, d=None, draw_rule="nearest
             fi = r_i+1; px = O[fi]
             R = abs(px-stop)
             if R<=0: i=fi+1; continue
+            # [v2.3 §D.11.3/H28] scan outward from entry; the NEAREST level that ALREADY
+            # satisfies >=2R is the draw. A nearer level that does not qualify is a
+            # partial-profit level — it is skipped and NEVER vetoes the trade.
             cands = [(nm,v) for nm,v in lv
                      if (v>px if side==1 else v<px) and nm in DRAW_OK[side]]
-            if not cands: draw_nm, draw = None, None
-            elif draw_rule=="nearest":
-                draw_nm, draw = min(cands,key=lambda t:abs(t[1]-px))
-            else:   # D.11 hierarchy: first tier that has any level on the correct side
-                draw_nm, draw = min(cands,key=lambda t:(HIER.index(t[0]),abs(t[1]-px)))
+            cands.sort(key=lambda t: abs(t[1]-px))
+            qualifying = [(nm,v) for nm,v in cands if abs(v-px)/R >= 2.0]
+            draw_nm, draw = qualifying[0] if qualifying else (None, None)
             rr = (abs(draw-px)/R) if draw is not None else np.nan
-            if draw is None or rr < 2.0:                                     # [H19] HARD GATE
+            if draw is None:                                                  # [H19] HARD GATE
                 rejects.append(dict(date=str(pd.Timestamp(day).date()),inst=inst,tf=tf,u22=u22,
-                    side=side,reason=("no_draw" if draw is None else "rr_below_2"),
+                    draw_rule=draw_rule,be=int(be),
+                    side=side,reason=("no_draw" if not cands else "rr_below_2"),
                     rr=rr,R_pts=R,inside_closes=inside_closes,
                     brk_body_ratio=brk_body/brk_rng,brk_vol_ratio=brk_vol_ratio,
                     ORH=ORH,ORL=ORL,break_m=int(M[bi]),rej_m=int(M[r_i]),entry_m=int(M[fi]),
@@ -171,6 +185,7 @@ def run(inst, tf=1, u22="DEEP", be=False, draws=None, d=None, draw_rule="nearest
             if ex is None: ex,exr=C[-1],"eod"
             gross=((ex-px)*side)/R
             rows.append(dict(date=str(pd.Timestamp(day).date()),inst=inst,tf=tf,u22=u22,be=int(be),
+                draw_rule=draw_rule,
                 side=side,ORH=ORH,ORL=ORL,break_m=int(M[bi]),rej_m=int(M[r_i]),entry_m=int(M[fi]),
                 entry=px,stop=stop,R_pts=R,draw=draw,draw_type=draw_nm,rr_pre=rr,
                 exit=ex,exit_reason=exr,gross=gross,net=gross-cost/R,mfe_R=mfe/R,mae_R=mae/R,

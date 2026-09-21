@@ -1,8 +1,88 @@
 # ANALYST_CURRENT
-**20 Sep 2026 · Analyst Agent · built against RESEARCH_CURRENT v2.2 (blob `27826b1`, verified byte-identical to the GitHub copy)**
+**21 Sep 2026 · Analyst Agent · code rebuilt against RESEARCH_CURRENT v2.3; empirical cycle PENDING LOCAL EXECUTION (see below)**
 
 ---
-# CEEWILLI V2.2 — CURRENT
+# CEEWILLI ENTRY-02 V2.3 — CODE REBUILT, **PENDING LOCAL EXECUTION**
+
+**Status: code only. No numbers in this section are new evidence.** This GitHub Actions
+session has no access to the canonical market-data store (`~/mnt/Market Data`, mounted only
+on the researcher's Mac) and, in this cycle, could not execute Python at all inside the
+sandbox (every `python3` invocation was denied by the harness) — so nothing here, including
+the self-tests, has actually been run anywhere yet. The v2.2 section immediately below is
+**preserved unchanged as superseded/provisional historical evidence** until the v2.3 cycle is
+run for real and this section is replaced with actual counts.
+
+## What changed, per issue #3 and RESEARCH_CURRENT v2.3 §D.11/§E.2/§H28/§H29
+- **Draw-selection rebuild.** v2.2's withdrawn strict-nearest rule is removed. `cw_entry02.py`
+  now implements the two v2.3 arms: scan outward from entry by distance and take the
+  **nearest level that already reaches >=2R**; a nearer non-qualifying level is a
+  partial-profit level and **never vetoes the trade** (§D.11.3, H28 — this directly fixes the
+  v2.2 defect where a 5-minute FVG sitting on top of the entry refused trades that price then
+  ran hard on, e.g. NAS100 2024-11-18 and 2022-08-24, ANALYST_CURRENT v2.2 §Visual validation).
+  - **DRAW-NQ**: all permitted target types (previous session H/L, previous day H/L, NWOG,
+    15m swing H/L, 5m/15m FVG).
+  - **DRAW-SQ**: prior-session structural levels only — **FVGs excluded as targets**.
+  - Both arms run; **neither is selected** (§D.11.3, H29, U-25). 16 cells total =
+    {1m,5m} x {HOLD,DEEP} x {BE off,on} x {DRAW-NQ,DRAW-SQ}.
+  - 1m/5m execution, HOLD/DEEP arms, BE-at-1R/no-BE, the >=2R pre-entry gate, CW-S1 stop
+    construction, honest next-bar fills, gross-before-costs, and the full unselected
+    population are all otherwise **unchanged** from v2.2 — only draw selection moved.
+
+## New diagnostic: external FVG / failed-break behaviour (`cw_fvg_diag.py`, `cw_fvg_figs.py`)
+Measures, without turning it into a rule or filter, the observed hypothesis that a break of
+one ORB boundary may only tap/fill an FVG just beyond that boundary before reversing through
+the ORB toward the opposite boundary. Reuses the exact 3-bar causal FVG test already in
+`cw_entry02.build_draws` (no size/distance/tolerance threshold added), applied to each day's
+own bars (pre-market through session end) so gaps forming during or after the ORB are found
+too, not just the previous-session gaps `build_draws` pre-marks as DRAW candidates.
+
+Classifies, per existing Entry-02 event (winner, loser, or gate-reject — never re-derives
+win/loss, reads it straight off `gross`): external FVG above ORH / below ORL present
+(field 1-2); whether the first broken-side external FVG known at break time is subsequently
+touched (3); touch degree — `wick_only` / `partial_fill` / `full_fill` / `none`, derived
+mechanically from the gap's own bounds, no threshold (4); whether price reaches the opposite
+ORB boundary (5); whether the continuation-side draw or the opposite boundary is reached
+first, for actual trades (6); and the causal event order break -> fvg_touch -> return_inside
+-> opposite_touch (7). Formation-timing cohorts (`pre_orb` / `during_orb` / `post_orb`) are
+recorded as descriptive fields only, never a filter. A `census_all_days` pass additionally
+covers fields 1-2 for every well-formed ORB day, independent of whether either boundary was
+ever broken.
+
+**Trend/bias:** not tested. RESEARCH_CURRENT v2.3 §D.3/U-24 is explicit that CeeWilli's HTF
+bias has no mechanical definition anywhere in the source. No objective trend/bias field exists
+in this dataset to cross-tab against, so this cross-tab is withheld pending a Research ruling
+— it is not computed, approximated, or proxied (`cw_fvg_diag.TREND_BIAS_NOTE`).
+
+## Primary count request — **NOT YET PRODUCED**
+The contingency counts and rates requested in issue #3 (winners/losers with vs without the
+relevant external-FVG touch; the reversal-sequence 2x2; pooled and by direction/instrument)
+require running `cw_fvg_diag.annotate()` against real Entry-02 output. **No such numbers
+exist yet.** They will land in `13_CROSS_MARKET/OUTPUTS/CW_FVG_DIAGNOSTIC_V23.md` and the v2.3
+economics in `13_CROSS_MARKET/OUTPUTS/CW_ENTRY02_V23_ECONOMICS.md` once
+`run_v23_cycle.py` is run on the researcher's Mac (see the issue-#3 reply for the exact
+command). Both output files currently contain only a "PENDING LOCAL EXECUTION" placeholder
+header — they are not present until that script writes them.
+
+## Self-tests — written, unrun in this session
+`13_CROSS_MARKET/CODE/cw_v23_selftest.py` exercises the draw-selection rebuild (H28 regression:
+a nearer non-qualifying level must not veto; DRAW-SQ must exclude FVG targets that DRAW-NQ
+accepts; invalid `draw_rule` must raise), the FVG scan, and the touch/fill/opposite-boundary/
+sequence classification, all on hand-built synthetic bars — no market data needed. It is
+believed correct by manual trace but **has not been executed anywhere**, including this
+session (Python execution itself was blocked here, not just the data mount). Run it first,
+and require a clean pass before trusting any real-data output from this cycle.
+
+## Visual pack — code only
+`cw_fvg_figs.py` renders the five requested scenario classes (ORH/ORL break -> FVG touch ->
+opposite reached / continuation-wins-instead / FVG present-not-touched) with ORH, ORL, the
+FVG zone, break/touch/return-inside/opposite-touch markers, and the Entry-02 entry/draw lines
+when a trade exists. No panels have been rendered — there is no data to render them from here.
+
+---
+# CEEWILLI V2.2 — SUPERSEDED / PROVISIONAL HISTORICAL EVIDENCE
+**Preserved unchanged below. Built against RESEARCH_CURRENT v2.2 (blob `27826b1`). Superseded
+by the v2.3 draw-selection ruling above (§D.11.3) — kept as the historical record until the
+v2.3 cycle actually runs, not as current evidence.**
 
 ## Specification built (v2.2 §D / §E.2 / §F, Entry 02 only)
 PRE-MARK DRAW → ORB 09:30–09:44:59 wick-to-wick → **BREAK** (body close beyond the edge; body/range
