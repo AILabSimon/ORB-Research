@@ -78,9 +78,19 @@ def run_cells(inst, d):
     import cw_entry02 as CW
     results = {}
     for tf, u22, be, rule in CELLS:
+        ft = os.path.join(WORK, f"CW_{inst}_{rule}_{tf}m_{u22}_BE{int(be)}.parquet")
+        fj = os.path.join(WORK, f"CWrej_{inst}_{rule}_{tf}m_{u22}_BE{int(be)}.parquet")
+        # resume guard: a completed cell is deterministic, so reuse it rather than
+        # recompute. Lets the cycle finish inside a bounded shell. Delete WORK/CW_*.parquet
+        # to force a clean re-run. No rule is affected.
+        if os.path.exists(ft) and os.path.exists(fj) and os.path.getsize(ft) > 0:
+            T, J = pd.read_parquet(ft), pd.read_parquet(fj)
+            results[(tf, u22, be, rule)] = (T, J)
+            print(f"  {inst} {tf}m {u22} BE{int(be)} {rule}: cached {len(T)} trades, {len(J)} rejects")
+            continue
         T, J = CW.run(inst, tf=tf, u22=u22, be=be, d=d, draw_rule=rule)
-        T.to_parquet(os.path.join(WORK, f"CW_{inst}_{rule}_{tf}m_{u22}_BE{int(be)}.parquet"))
-        J.to_parquet(os.path.join(WORK, f"CWrej_{inst}_{rule}_{tf}m_{u22}_BE{int(be)}.parquet"))
+        T.to_parquet(ft)
+        J.to_parquet(fj)
         results[(tf, u22, be, rule)] = (T, J)
         print(f"  {inst} {tf}m {u22} BE{int(be)} {rule}: {len(T)} trades, {len(J)} gate-rejects")
     return results

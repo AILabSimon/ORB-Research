@@ -14,7 +14,15 @@ import cw_entry02 as CW
 def panel(ax, b, row, title):
     M = b.m.values
     bi = int(np.searchsorted(M, row["break_m"]))
-    lo_i, hi_i = max(0, bi - 20), min(len(b), bi + 60)
+    # DEFECT FIX: the window was a fixed +60 bars from the break, which frequently ended
+    # BEFORE the opposite-ORB touch the panel is meant to evidence (e.g. NAS100 2016-01-07:
+    # fvg touch 10:28, opposite touch 13:12). Extend to cover every marked event + padding.
+    end_m = row["break_m"]
+    for k in ("fvg_touch_m", "return_inside_m", "opposite_touch_m"):
+        v = row.get(k)
+        if v is not None and not (isinstance(v, float) and np.isnan(v)): end_m = max(end_m, v)
+    ei = int(np.searchsorted(M, end_m))
+    lo_i, hi_i = max(0, bi - 20), min(len(b), max(bi + 60, ei + 15))
     O, H, L, C, M = (b.open.values[lo_i:hi_i], b.high.values[lo_i:hi_i], b.low.values[lo_i:hi_i],
                       b.close.values[lo_i:hi_i], b.m.values[lo_i:hi_i])
     ORH, ORL = row["ORH"], row["ORL"]
@@ -63,7 +71,7 @@ def grid(rows_df, bars_by_idx, fn, sup):
     n = len(rows_df)
     if n == 0: return False
     r = (n + 1) // 2
-    fig, axes = plt.subplots(r, 2, figsize=(13, 2.6 * r)); axes = np.array(axes).reshape(-1)
+    fig, axes = plt.subplots(r, 2, figsize=(13, 5.2 * r)); axes = np.array(axes).reshape(-1)
     for a in axes[n:]: a.axis("off")
     for a, (idx, row) in zip(axes, rows_df.iterrows()):
         title = (f"{row['inst']} {row['date']} {'L' if row['side']==1 else 'S'} | "
@@ -73,7 +81,7 @@ def grid(rows_df, bars_by_idx, fn, sup):
                  + (f" | {row['exit_reason']} {row['gross']:+.2f}R" if row.get("is_trade") else " | no trade"))
         panel(a, bars_by_idx[idx], row, title)
     fig.suptitle(sup, fontsize=10, y=.999)
-    fig.tight_layout(rect=[0, 0, 1, .985]); fig.savefig(fn, dpi=105); plt.close(fig)
+    fig.tight_layout(rect=[0, 0, 1, .985]); fig.savefig(fn, dpi=125); plt.close(fig)
     return True
 
 def build_pack(ann, d_by_inst, outdir, n_each=2):
@@ -87,8 +95,14 @@ def build_pack(ann, d_by_inst, outdir, n_each=2):
         bars_by_idx = {}
         for idx, row in rows.iterrows():
             d = d_by_inst[row["inst"]]
-            g = d[d.day == pd.Timestamp(row["date"])]
-            bars_by_idx[idx] = CW.resample(g[g.m < CW.SESS_END], row["tf"]).reset_index(drop=True)
+            # DEFECT FIX (same class as cw_fvg_diag._bars_for_day): row["date"] is a naive
+            # date string, d.day is tz-aware NY -- a naive comparison matched zero rows and
+            # produced empty panels. Localise before matching.
+            _day = pd.Timestamp(row["date"])
+            if _day.tz is None: _day = _day.tz_localize("America/New_York")
+            g = d[d.day == _day]
+            g = g[g.m < CW.SESS_END]
+            bars_by_idx[idx] = CW.resample(g, row["tf"]).reset_index(drop=True)
         fn = os.path.join(outdir, f"FVG_{name}.png")
         if grid(rows, bars_by_idx, fn, f"External FVG diagnostic -- {name} -- n={len(rows)}"):
             written.append(fn)

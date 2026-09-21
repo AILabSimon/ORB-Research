@@ -65,6 +65,7 @@ def build_draws(d):
 
 def resample(g, tf):
     if tf==1: return g.reset_index(drop=True)
+    if len(g)==0: return g.reset_index(drop=True)   # empty-resample guard [defect fix]
     agg=dict(open=("open","first"),high=("high","max"),low=("low","min"),
              close=("close","last"),m=("m","first"))
     if "volume" in g.columns: agg["volume"]=("volume","sum")

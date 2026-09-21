@@ -39,10 +39,21 @@ def formation_cohort(m):
     return "post_orb"
 
 def _bars_for_day(d, inst, tf, day, cache):
+    # DEFECT FIX: trade/reject `date` fields are naive date strings, while d.day is
+    # tz-aware America/New_York. A naive == tz-aware comparison matched ZERO rows for
+    # every trade, so annotate() silently skipped the entire population and the
+    # diagnostic returned an empty (false-null) result. Localise before matching.
+    day = pd.Timestamp(day)
+    if day.tz is None: day = day.tz_localize("America/New_York")
     key = (inst, tf, day)
     if key in cache: return cache[key]
     g = d[d.day == day]
-    b = CW.resample(g[g.m < CW.SESS_END], tf).reset_index(drop=True)
+    g = g[g.m < CW.SESS_END]
+    # DEFECT FIX: weekend/holiday sessions in the CFD feed carry only post-16:00 bars,
+    # leaving an empty frame that pandas' empty-resample cannot reset_index().
+    if len(g) == 0:
+        cache[key] = (g, []); return g, []
+    b = CW.resample(g, tf).reset_index(drop=True)
     fvgs = scan_fvgs(b)
     cache[key] = (b, fvgs)
     return b, fvgs
