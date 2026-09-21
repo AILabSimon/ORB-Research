@@ -1,0 +1,152 @@
+name: Claude Scheduled Instruction Check
+#
+# FALLBACK POLLER — not the primary Claude trigger.
+#
+# The primary mechanism is .github/workflows/claude.yml, which fires instantly
+# on issue_comment/issues/pull_request_review(_comment) events containing
+# "@claude". This workflow exists only to catch cases where that live event
+# trigger did not fire (workflow disabled, GitHub outage, transient failure,
+# a comment edited after creation to add "@claude", etc.). It must not be
+# treated as the normal way instructions reach Claude.
+#
+# See .github/claude-scheduler/README.md for why this file lives here instead
+# of .github/workflows/ and what to do with it.
+
+on:
+  schedule:
+    - cron: '17 */3 * * *' # every 3 hours, offset off the hour to avoid GitHub's cron congestion at :00
+  workflow_dispatch: {} # allows a manual run for testing
+
+concurrency:
+  group: claude-scheduled-check
+  cancel-in-progress: false # never kill a run mid-flight; let overlapping fires queue instead
+
+permissions:
+  contents: write # to commit the state file
+  issues: write # Claude needs to be able to comment on the missed issue
+  pull-requests: write
+  id-token: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Detect unprocessed @claude instruction
+        id: detect
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          STATE_FILE=".github/claude-scheduler/state.json"
+          BOT_LOGIN="claude[bot]"
+
+          SCHEDULER_PROCESSED_ID=0
+          if [ -f "$STATE_FILE" ]; then
+            SCHEDULER_PROCESSED_ID=$(jq -r '.last_scheduler_fired_comment_id // 0' "$STATE_FILE")
+          fi
+
+          # Newest-first page of comments across all issues/PRs in the repo.
+          # One API call, no repo-wide file reads, no Claude invocation yet.
+          COMMENTS=$(gh api "repos/$REPO/issues/comments?sort=created&direction=desc&per_page=100")
+
+          # Candidates: non-bot comments mentioning @claude, newest first.
+          CANDIDATES=$(echo "$COMMENTS" | jq -c \
+            --arg bot "$BOT_LOGIN" \
+            '[.[] | select(.user.login != $bot) | select(.body | test("@claude"; "i"))]')
+
+          TARGET=""
+          COUNT=$(echo "$CANDIDATES" | jq 'length')
+          i=0
+          while [ "$i" -lt "$COUNT" ]; do
+            CAND=$(echo "$CANDIDATES" | jq -c ".[$i]")
+            CAND_ID=$(echo "$CAND" | jq -r '.id')
+            ISSUE_URL=$(echo "$CAND" | jq -r '.issue_url')
+            ISSUE_NUMBER=$(basename "$ISSUE_URL")
+
+            if [ "$CAND_ID" = "$SCHEDULER_PROCESSED_ID" ]; then
+              # We already fired the scheduler for this exact comment; don't refire
+              # even if Claude's own reply hasn't landed yet.
+              i=$((i+1))
+              continue
+            fi
+
+            # Has the bot already replied on this issue after this comment was made?
+            # (Live trigger handled it -> nothing to do.)
+            LATER_BOT_REPLY=$(echo "$COMMENTS" | jq -r \
+              --arg bot "$BOT_LOGIN" --argjson after "$CAND_ID" --arg issue "$ISSUE_URL" \
+              '[.[] | select(.user.login == $bot) | select(.issue_url == $issue) | select(.id > $after)] | length')
+
+            if [ "$LATER_BOT_REPLY" = "0" ]; then
+              TARGET="$CAND"
+              break
+            fi
+            i=$((i+1))
+          done
+
+          if [ -z "$TARGET" ]; then
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "No unprocessed @claude instruction found. Exiting."
+            exit 0
+          fi
+
+          TARGET_ID=$(echo "$TARGET" | jq -r '.id')
+          TARGET_ISSUE_URL=$(echo "$TARGET" | jq -r '.issue_url')
+          TARGET_ISSUE_NUMBER=$(basename "$TARGET_ISSUE_URL")
+          TARGET_COMMENT_URL=$(echo "$TARGET" | jq -r '.html_url')
+
+          echo "found=true" >> "$GITHUB_OUTPUT"
+          echo "comment_id=$TARGET_ID" >> "$GITHUB_OUTPUT"
+          echo "issue_number=$TARGET_ISSUE_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "comment_url=$TARGET_COMMENT_URL" >> "$GITHUB_OUTPUT"
+
+      - name: Run Claude Code on the missed instruction
+        if: steps.detect.outputs.found == 'true'
+        id: claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          additional_permissions: |
+            actions: read
+          # NOTE: this run has no native issue_comment/issues event context
+          # (it's a `schedule` trigger), so there is no github.event.issue for
+          # the action to auto-attach its tracking comment to. This prompt
+          # tells Claude explicitly which issue to act on and to post there
+          # itself. Whether the action's normal comment-tracking UI also
+          # works correctly with no native event context is UNVERIFIED — see
+          # .github/claude-scheduler/README.md.
+          prompt: |
+            A scheduled fallback check (not the live @claude event trigger) found an
+            instruction that does not appear to have received a response yet:
+            ${{ steps.detect.outputs.comment_url }}
+
+            Fetch that comment (e.g. via `gh api`) on issue
+            #${{ steps.detect.outputs.issue_number }} in ${{ github.repository }},
+            then process it exactly as you would any @claude-triggered instruction,
+            following the normal repository workflow and this repo's CLAUDE.md if
+            present. Post your response as a comment on that issue.
+
+      - name: Record processed state
+        if: steps.detect.outputs.found == 'true'
+        run: |
+          set -euo pipefail
+          mkdir -p .github/claude-scheduler
+          cat > .github/claude-scheduler/state.json <<EOF
+          {
+            "last_scheduler_fired_comment_id": ${{ steps.detect.outputs.comment_id }},
+            "last_scheduler_fired_issue": ${{ steps.detect.outputs.issue_number }},
+            "last_scheduler_run_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          }
+          EOF
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .github/claude-scheduler/state.json
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: record scheduler-processed instruction"
+            git push
+          fi
