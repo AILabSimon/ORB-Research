@@ -1,8 +1,101 @@
 # ANALYST_CURRENT
-**20 Sep 2026 · Analyst Agent · built against RESEARCH_CURRENT v2.2 (blob `27826b1`, verified byte-identical to the GitHub copy)**
+**21 Sep 2026 · Analyst Agent · latest cycle built against RESEARCH_CURRENT v2.3, issue #3**
 
 ---
-# CEEWILLI V2.2 — CURRENT
+# CEEWILLI V2.3 — CURRENT (code rebuilt; execution blocked this cycle)
+
+## What this cycle could and could not do
+This cycle ran inside the GitHub Actions `claude-code-action` environment (a fresh
+`ubuntu-latest` checkout of this repository only, triggered from issue #3). Every prior
+Analyst cycle recorded in this file was produced somewhere with access to the canonical
+market-data store that `13_CROSS_MARKET/CODE/mdload.py` reads from (mounted at
+`~/mnt/Market Data`; underlying store `/Users/.../Data/Downloads/Dukascopy`, see
+`13_CROSS_MARKET/DATA/CROSS_MARKET_DATA_INVENTORY.md`). **That store is not reachable
+from this environment** — the harness hard-blocks any path outside the repository
+working directory, and no such mount exists on the Actions runner. Consequently:
+**no backtest was executed, no contingency counts or rates were produced, and no visual
+pack was rendered this cycle.** Per programme discipline (gross before net, no invented
+numbers), nothing below is presented as a result — only as code, ready to run, plus one
+finding that is verifiable from the specification text alone (trend/bias, below).
+
+## 1. CeeWilli Entry 02 — v2.3 draw-arm rebuild (`13_CROSS_MARKET/CODE/cw_entry02.py`)
+[v2.2's ANALYST_CURRENT defect 1 — "§E.2 nearest contradicts §D.11 hierarchy"] is
+superseded by the v2.3 ruling (§D.11.3), which withdraws both the old `nearest` and
+`hierarchy` readings and replaces them with two source-defensible arms. The engine is
+rebuilt accordingly:
+- `select_draw()` now scans outward from entry by distance and takes the **first**
+  permitted level that already satisfies `>= 2R`; a nearer non-qualifying level is
+  skipped, never a veto — this directly targets **H28** ("a setup refused because a
+  level closer than a qualifying one sat in the way is a defect").
+- `DRAW-NQ`: all permitted types (§D.11 table, minus the opposite ORB level) — the full
+  ~120-level set.
+- `DRAW-SQ`: prior-session structural levels only (previous session H/L, previous day
+  H/L, NWOG, 15m swing H/L) — FVGs excluded as targets.
+- The reject reason collapses to a single `no_draw` bucket (no level anywhere above
+  entry reaches 2R) — there is no longer an `rr_below_2` reason, because a level that
+  fails the gate is simply skipped in favour of the next one out, not treated as a
+  refusal. This is the intended effect of H19 + H28 together.
+- All source-faithful mechanics carried over unchanged: 1m/5m execution, HOLD/DEEP U-22,
+  BE-at-1R/no-BE, the hard >=2R gate, CW-S1 stop construction, next-bar-open fills, gross
+  before costs, full unselected population. **16 cells** = {1m,5m} x {HOLD,DEEP} x
+  {BE off,BE on} x {DRAW-NQ,DRAW-SQ}. Neither draw arm is selected; both are reported
+  once run.
+- **Not executed.** The code has not been run against real data in this environment and
+  has not cleared H1-H29 on a sample. Do not trust a future run's numbers until it has.
+
+## 2. External FVG / failed-break diagnostic — NEW (`13_CROSS_MARKET/CODE/fvg_diagnostic.py`)
+Built to the issue's spec: causal 3-candle FVG registry (same gap definition already used
+for pre-market draws — no new tolerance/size/distance parameter), evaluated continuously
+so an FVG can be "known before the ORB completed" as the issue asks, not just from the
+previous session. Implements:
+- fields 1-2 (external FVG above ORH / below ORL present, live and unfilled, at break
+  time);
+- field 3 (first broken-side external FVG subsequently touched — wick overlap);
+- field 4 (fill state: `full` / `partial` / `wick_only`, from a single exact-bounds test,
+  no tolerance added);
+- field 5-6 (opposite-ORB-boundary reached vs the Entry-02 continuation-side draw, and
+  which comes first — continuation-side draw is only defined on days/sides that actually
+  produced an Entry-02 trade; otherwise recorded as not applicable, never proxied);
+- field 7 (order: break -> FVG touch -> return inside ORB -> opposite touch);
+- formation-timing cohorts (pre_orb / during_orb / post_orb), descriptive only;
+- `primary_counts()` — Entry-02 win/loss x broken-side-FVG-touch contingency + rates;
+- `reversal_counts()` — FVG-touch x opposite-ORB-reached, over **all** eligible breaks,
+  not only entered trades (the issue separates these two measurements deliberately);
+- `visual_pack()` — renders the five requested example categories once a diagnostic
+  table exists, extending the existing `v22_figs.py` candle-drawing conventions.
+
+**Known caveat, unresolved pending a run:** the tf=5 bar grid in this module is resampled
+continuously across the whole series, while `cw_entry02.run()` resamples per trading day
+from 09:30. The two 5-minute bin boundaries are not guaranteed to align. Verify on a
+sample day before trusting any tf=5 touch/order result, or rebuild the grid from
+`cw_entry02.resample()` applied per day and concatenated.
+
+**Not executed, not sanity-checked, not visually validated.** This is written code, not
+a research finding. RESEARCH_CURRENT.md's own rule applies here as much as to the entry
+engine: pass acceptance checks on a small sample before any count is quoted.
+
+## 3. Overall trend / bias — answerable without execution
+No fitted trend filter was created, per the mandate. Checked directly against the
+specification text (no data run needed for this part): §D.3 states the HTF bias veto is
+**removed** from v2.2 onward; §D.14 and §I U-24 confirm CeeWilli's "overall market bias"
+is named once, in the pre-market checklist, with **no mechanical method given** and **no
+gate on any of his four models**; `cw_entry02.py` computes no such field for exactly this
+reason. **There is no objective trend/bias column in this research dataset to cross-tab
+the FVG-touch/reversal counts against.** This is left for a Research ruling, as the issue
+itself anticipates, rather than fitted from economics. See `trend_bias_note()`.
+
+## Highest-value next action
+Run `cw_entry02.py` (16 cells) and `fvg_diagnostic.py` in an environment with `mdload`
+access to the canonical store; confirm H1-H29 (entry engine) and a small-sample sanity
+check on the FVG module (touch/fill classification, causal-only FVGs, no lookahead)
+before trusting any number; then produce the primary contingency counts, the reversal-
+sequence counts (pooled + by direction + by instrument), the formation-timing cross-tab,
+and the visual pack requested in issue #3, and append them here as a new dated entry.
+Until that run happens, the population size and every rate implied by it is unknown —
+this section deliberately contains no numbers.
+
+---
+# CEEWILLI V2.2 — PRIOR CYCLE (built against v2.2; draw rule now superseded by v2.3 above)
 
 ## Specification built (v2.2 §D / §E.2 / §F, Entry 02 only)
 PRE-MARK DRAW → ORB 09:30–09:44:59 wick-to-wick → **BREAK** (body close beyond the edge; body/range

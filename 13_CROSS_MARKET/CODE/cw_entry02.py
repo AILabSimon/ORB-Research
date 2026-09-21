@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
 """
-CEEWILLI ENTRY-02 (BREAK & RETEST) — built to RESEARCH_CURRENT v2.2 §D / §E.2.
-Authority: v2.2 §D (rewritten) + §E.2 + §F + §H19-H27 + §I. Max rules are NOT used here.
-No optimisation, no thresholds, no filters. 8 cells = {1m,5m} x {HOLD,DEEP} x {BE off,BE on}.
+CEEWILLI ENTRY-02 (BREAK & RETEST) — built to RESEARCH_CURRENT v2.3 §D / §E.2 / §D.11.3.
+Authority: v2.3 §D.11 (draw = unordered set, classification D) + §E.2 + §F + §H19-H29 + §I.
+Max rules are NOT used here. No optimisation, no thresholds, no filters.
+16 cells = {1m,5m} x {HOLD,DEEP} x {BE off,BE on} x {DRAW-NQ,DRAW-SQ}.
+[v2.3] Strict-nearest and the v2.2 "hierarchy" reading are both withdrawn (§D.11.2,
+ANALYST_CURRENT v2.2 defect 1). Replaced by two source-defensible arms (§D.11.3):
+DRAW-NQ (nearest QUALIFYING level, all permitted types) and DRAW-SQ (nearest qualifying,
+prior-session structural levels only — FVGs excluded as targets). Represent, do not select.
 """
 import numpy as np, pandas as pd, mdload
 
@@ -75,11 +80,27 @@ def resample(g, tf):
 # long, and a bearish FVG is not either. [implementation-defect fix, mandate 21]
 DRAW_OK = {1:{"prev_session_H","prev_day_H","NWOG_close","NWOG_open","15m_swingH","FVG_5m_up","FVG_15m_up"},
           -1:{"prev_session_L","prev_day_L","NWOG_close","NWOG_open","15m_swingL","FVG_5m_dn","FVG_15m_dn"}}
-# D.11 states a numbered hierarchy; E.2 pseudocode says "nearest". They conflict (see report).
-HIER = ["prev_session_H","prev_session_L","prev_day_H","prev_day_L","NWOG_close","NWOG_open",
-        "FVG_5m_up","FVG_5m_dn","FVG_15m_up","FVG_15m_dn","15m_swingH","15m_swingL"]
+# [v2.3 D.11.3] prior-session structural levels only — the DRAW-SQ permitted set. FVGs excluded.
+STRUCTURAL = {"prev_session_H","prev_session_L","prev_day_H","prev_day_L",
+              "NWOG_close","NWOG_open","15m_swingH","15m_swingL"}
+DRAW_TYPES = {"DRAW-NQ": DRAW_OK,
+              "DRAW-SQ": {s: DRAW_OK[s] & STRUCTURAL for s in DRAW_OK}}
 
-def run(inst, tf=1, u22="DEEP", be=False, draws=None, d=None, draw_rule="nearest"):
+def select_draw(lv, px, side, R, draw_rule):
+    """[v2.3 §D.11.3/§E.2 step5] Scan outward from entry; take the FIRST permitted level
+    that already satisfies >=2R. A nearer non-qualifying level is a partial-profit level:
+    skipped, never a veto [H28]. Returns (draw_type, draw_price, rr) or (None,None,nan)."""
+    ok = DRAW_TYPES[draw_rule][side]
+    cands = [(nm,v) for nm,v in lv if (v>px if side==1 else v<px) and nm in ok]
+    cands.sort(key=lambda t: abs(t[1]-px))
+    for nm, v in cands:
+        rr = abs(v-px)/R
+        if rr >= 2.0:
+            return nm, v, rr
+    return None, None, np.nan
+
+def run(inst, tf=1, u22="DEEP", be=False, draws=None, d=None, draw_rule="DRAW-NQ"):
+    assert draw_rule in DRAW_TYPES, "draw_rule must be DRAW-NQ or DRAW-SQ [v2.3 D.11.3]"
     if d is None: d = load_ny(inst)
     if draws is None: draws = build_draws(d)
     tick = TICK[inst]; cost = COST[inst]; rows=[]; rejects=[]
@@ -135,17 +156,10 @@ def run(inst, tf=1, u22="DEEP", be=False, draws=None, d=None, draw_rule="nearest
             fi = r_i+1; px = O[fi]
             R = abs(px-stop)
             if R<=0: i=fi+1; continue
-            cands = [(nm,v) for nm,v in lv
-                     if (v>px if side==1 else v<px) and nm in DRAW_OK[side]]
-            if not cands: draw_nm, draw = None, None
-            elif draw_rule=="nearest":
-                draw_nm, draw = min(cands,key=lambda t:abs(t[1]-px))
-            else:   # D.11 hierarchy: first tier that has any level on the correct side
-                draw_nm, draw = min(cands,key=lambda t:(HIER.index(t[0]),abs(t[1]-px)))
-            rr = (abs(draw-px)/R) if draw is not None else np.nan
-            if draw is None or rr < 2.0:                                     # [H19] HARD GATE
+            draw_nm, draw, rr = select_draw(lv, px, side, R, draw_rule)
+            if draw is None:                                        # [H19/H28] HARD GATE
                 rejects.append(dict(date=str(pd.Timestamp(day).date()),inst=inst,tf=tf,u22=u22,
-                    side=side,reason=("no_draw" if draw is None else "rr_below_2"),
+                    side=side,reason="no_draw",
                     rr=rr,R_pts=R,inside_closes=inside_closes,
                     brk_body_ratio=brk_body/brk_rng,brk_vol_ratio=brk_vol_ratio,
                     ORH=ORH,ORL=ORL,break_m=int(M[bi]),rej_m=int(M[r_i]),entry_m=int(M[fi]),
