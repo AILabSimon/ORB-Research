@@ -1,5 +1,5 @@
 # RESEARCH_CURRENT.md — SOURCE-FAITHFUL V2 SPECIFICATION
-Research Agent · **v2.2** · 2026-09-20 · supersedes all earlier specification material
+Research Agent · **v2.3** · 2026-09-21 · supersedes all earlier specification material
 v2.1 incorporated the RR-003 rulings (retest/continuation split, MAX-S1 floor, Max
 print-through trigger). **v2.2 rewrites the CeeWilli specification against his primary
 document — *The ORB Playbook* (Mind Over Markets, 10pp).** Changes are marked **[v2.1]**
@@ -39,16 +39,26 @@ of orb there's no confirmations"), the shared machine is:
 **BREAK → RETEST (may close back inside the ORB) → RECLAIM candle (closes back
 beyond the edge) → ENTRY.**
 
-The two divergences:
+**[v2.3] That paragraph describes Max. It was written at v2.0, when both authors were
+believed to share one machine. Since v2.2 they do not** — CeeWilli's own playbook adds a
+pre-market **DRAW** state and a hard **RR_GATE**, has no **RECLAIM** (his state is
+**REJECTION**), and imposes no candle count on the pullback. The authoritative machines
+are §C (Max) and §D/§E.2 (CeeWilli); §B marks each row MAX-ONLY or CEEWILLI-ONLY where
+they differ. Where this summary and §D disagree, **§D governs.**
+
+The divergences that remain, stated correctly:
 
 | | MAX | CEEWILLI |
 |---|---|---|
-| **Break** | a **15-minute** body close outside the ORB (R-006) | a **1-minute** body close outside the ORB, with visible displacement (C3 17:18, C4 05:36) |
-| **Entry fires** | on the **next** candle trading **through the reclaim candle's extreme** — an intrabar stop-order trigger ("print through", R-009, V11 08:34) | at the **close of the reclaim candle itself** — an end-of-bar trigger (C1 04:41) |
+| **Break** | a **15-minute** body close outside the ORB (R-006) | a **1-minute** (or 5-minute, U-23) body close outside the ORB (C3 17:18; playbook Entry 02 step 1) |
+| **Pullback** | **>= 2 interacting candles** (V8 14:52, V8 11:50, V12 27:23) | **no candle count anywhere in his material** (§D.4) |
+| **Third state** | **RECLAIM** — a close back outside after being inside | **REJECTION** — a candle interacting with the level that closes on the correct side (§D.6) |
+| **Entry fires** | on the **next** candle trading **through the reclaim candle's extreme** — an intrabar stop-order trigger ("print through", R-009, V11 08:34) | at the **close of the rejection candle itself** — an end-of-bar trigger (C1 04:41) |
+| **Pre-trade gate** | none | **RR_GATE, minimum 1:2** (§D.8) |
+| **Target** | none for the continuation trade — hold to invalidation (R-045) | a pre-marked liquidity level, selected before entry (§D.11) |
 
-They are **one bar apart**, and Max's "it's usually the next one" is exactly that one
-bar. This is not a hybrid; it is two variants of one machine, and they must be tested
-as two arms.
+Max's "it's usually the next one" is the one-bar gap in **his** entry trigger. This is not
+a hybrid; they are two machines and must be tested separately.
 
 **Corrections I am making to my own earlier record.** In the 20.1 Representation Audit
 I wrote that the R-band result "confirms the closure against the *your stop was too
@@ -336,13 +346,83 @@ Exit at the first close back inside the ORB. **This is no longer Max's rule appl
 his arm for comparability — it is his own, EXPLICIT, arrived at independently.** Delete
 the v2.1 note that labelled it as ours.
 
-## D.11 Target hierarchy — explicit, and one v2.1 claim was false
-1. Previous session high / low · 2. Previous day high / low · 3. **New Week Opening
-Gap** · 4. Key fair value gaps, **5m and 15m** · 5. 15-minute swing highs/lows ·
-6. **The opposite ORB level** (Entries 03 and 04 only).
+## D.11 [v2.3] Draw / target — the permitted SET, which the source does not rank
+
+**The permitted target types are an UNORDERED SET. The numbering in v2.2 was
+presentational and implied a priority the source never states — that was my error and
+it is withdrawn.**
+
+| Type | Source |
+|---|---|
+| Previous session high / low | playbook pre-market checklist; Entry 01, 02, 03 |
+| Previous day high / low | Entry 03 step 1 |
+| **New Week Opening Gap** | pre-market checklist; Entry 02 step 4; C1 16:18 "very good **drawing** liquidity" |
+| "the next **key** fair value gap" | Entry 01 step 4, Entry 02 step 4 |
+| 15-minute swing highs / lows | Entry 03 step 1: "These are your **liquidity targets**" |
+| Asian high / low, "the 15-minute liquidity" | C1 05:07 |
+| The **opposite ORB level** | Entries **03 and 04 only** — not our arm |
+
 **[v2.2] v2.1 said CeeWilli's targets are "never ORB-derived". CONTRADICTED** — true for
-01/02, false for 03/04. For our Entry-02 arm, targets are external liquidity, selected
-**before** entry so the RR_GATE can be evaluated.
+01/02, false for 03/04.
+
+### D.11.1 He distinguishes three different things, and v2.2 collapsed them
+| Object | His words | Role |
+|---|---|---|
+| **Draw / target** | "target **draw on liquidity**" (C4 07:39); "**drawing** liquidity" (C1 16:18) | the level the trade is sized against — the RR_GATE denominator's partner |
+| **Intermediate key level** | "**Take partial profits at key levels.** If your target is 4R away, consider locking in half at 2R and letting the rest run." | a place to scale out **on the way to** the target. **It is not the target and it does not end the trade.** |
+| **Entry confluence** | "Pair the retest with a **1-min or 5-min fair value gap at the ORB level** for even higher conviction. FVG + ORB retest at the same level is **one of the strongest confluences** in the playbook." | an FVG sitting **on top of the entry** is a **reason to take the trade** |
+
+**Consequence, and this is the ruling (§D.11.3): a level nearer than the chosen target
+NEVER vetoes the trade.** The partials rule presupposes levels short of the target; the
+pro tip makes an FVG at the entry a positive; and the gate's own words are conditional
+on **your** target — "Never take a trade unless **your target** is at least 2x your stop
+loss distance" — not on the nearest thing above you.
+
+### D.11.2 "Nearest" is WITHDRAWN — it was mine, not his
+v2.2 §E.2 said `draw = nearest pre-marked level above entry`. The source words are
+"target the **next** liquidity level", and I collapsed that into "nearest of everything
+pre-marked". That conflated the pre-market **watch** list with the **target** list and
+made a nearby level able to refuse a trade. Four pieces of evidence contradict it:
+1. The same four-line step says: "target the next liquidity level. Tighter stop, more
+   conviction. **You can hold for bigger targets** — previous session high/low, new week
+   opening gap, or the next key fair value gap." **Explicit permission to target beyond
+   the nearest.**
+2. "Take partial profits at key levels" presupposes levels between entry and target.
+3. The pro tip makes a 1m/5m FVG **at the ORB level** an entry positive. Under "nearest"
+   that same FVG becomes the target and refuses the trade — an exact inversion of what he
+   wrote.
+4. C1 05:07: "target either Asian high **or** … the 15-minute liquidity … **or all the
+   way to** the previous day high." "All the way to" explicitly contemplates skipping
+   nearer levels.
+
+### D.11.3 RULING — **classification D: the source does not resolve draw selection**
+It gives a **set** of permitted types and **no ranking among them**. It does not say how
+to choose when several qualify. **I am not inventing a rule.** What the source *does*
+settle:
+- a nearer level **never vetoes** (D.11.1);
+- the target must be pre-marked and known **before** entry (the gate needs it);
+- strict-nearest is **withdrawn** (D.11.2) and is not carried as an arm.
+
+**Two permitted arms — the minimum that spans the ambiguity. No sweep.**
+
+| Arm | Permitted target set | Selection |
+|---|---|---|
+| **DRAW-NQ** | all permitted types in the D.11 table (minus the opposite ORB level) | the **nearest level beyond entry that satisfies >= 2R**; nearer levels are partial-profit levels |
+| **DRAW-SQ** | **prior-session structural levels only** — previous session H/L, previous day H/L, NWOG, 15m swing H/L. **FVGs excluded as targets** | the **nearest of those beyond entry that satisfies >= 2R** |
+
+DRAW-SQ exists because the playbook's only instruction that places a 1m/5m FVG at a
+specific price puts it **at the ORB level as an entry confluence**, not as a target; the
+only FVG named as a target is "the next **key** fair value gap", and "key" is never
+defined. Excluding FVGs from the target set is therefore a defensible reading, and it is
+exactly the reading the Analyst's two reject panels turn on.
+**Run both. Report both. Select neither.** See §I U-25.
+
+### D.11.4 A representation caveat the arms cannot fix
+CeeWilli's chart carries a **handful** of pre-marked levels (his checklist names four
+categories). The engine holds ~**120** permitted levels across 12 types. Two traders
+applying an *identical* rule to those two level sets will disagree about what "the next
+liquidity level" is. **The density of the level set matters as much as the selection
+rule**, and DRAW-SQ is the sparser reading. Recorded, not turned into a filter.
 
 ## D.12 [v2.2] Management — new, and mechanical
 | Rule | Verbatim | Class |
@@ -408,8 +488,15 @@ SHORT is the exact mirror: `close < ORL`, `high >= ORL`, `close < ORL`, SELL STO
 4  S3  REJECTION: first bar with low <= ORH <= high AND close > ORH   → bar r
 5  RR_GATE: stop = min(low) over [t_break … r] − 1 tick   (CW-S1)
             entry_px = close(r)   [fill modelled at open(r+1)]
-            draw = nearest pre-marked level above entry_px
-            REQUIRE (draw − entry_px) >= 2 * (entry_px − stop)   ELSE **NO TRADE**
+            [v2.3] draw = the NEAREST permitted level above entry_px that ALREADY
+              satisfies (draw − entry_px) >= 2 * (entry_px − stop).
+              Scan outward from entry and take the first level that qualifies.
+              A nearer level that does NOT qualify is a PARTIAL-PROFIT level:
+              it is skipped, and it NEVER vetoes the trade.   (§D.11.3)
+              permitted set is arm-specific:
+                DRAW-NQ  all permitted types (§D.11 table, minus the opposite ORB level)
+                DRAW-SQ  prior-session structural only; FVGs EXCLUDED as targets
+            if no permitted level qualifies anywhere above entry → **NO TRADE**
 6  S4  ENTER at market; fill at open(r+1)
 7  manage  BE arm: move stop to entry once price reaches entry + 1R
 8  exit    target = draw; hard exit on the first close back inside the ORB (D.10);
@@ -418,9 +505,10 @@ SHORT is the exact mirror: `close < ORL`, `high >= ORL`, `close < ORL`, SELL STO
 SHORT is the exact mirror: `close < ORL`, `high >= ORL`, rejection bar with
 `low <= ORL <= high AND close < ORL`, stop `max(high)[t_break…r] + 1 tick`, draw below.
 
-**Arms to run on the CeeWilli side:** {1m, 5m} x {U-22 (a), U-22 (b)} x {BE on, BE off}.
-That is 8 cells, and every dimension is a **documented disagreement in the sources**,
-not a parameter sweep. Report all 8; do not select among them.
+**[v2.3] Arms on the CeeWilli side:** {1m, 5m} x {U-22 (a), (b)} x {BE on, off} x
+{**DRAW-NQ, DRAW-SQ**} = 16 cells. Every dimension is a **documented ambiguity in the
+sources**, not a parameter sweep. Report all 16; select none.
+**Strict-nearest is withdrawn and must not be run as a cell** (§D.11.2).
 
 **The two variants share S0, S2, S3, the invalidation and the day stop. They differ
 only at S1 (15m vs 1m), S4 (stop order on the next bar vs close of the reclaim bar)
@@ -491,6 +579,32 @@ Full library and the reproducible capture recipe:
 | VRC-03 | Max V8 11:50-12:20 | The "one-two punch": fail → retest → the candle that closed outside → new extreme = entry. | **Verbal only.** No chart capture. |
 | VRC-04 | Max V11 08:34 / V10 24:18 | Print-through entry, stated live and pre-announced. | **Verbal only.** No chart capture. |
 
+### [v2.3] VRC-01 as a DRAW cross-check — partial, and its limits stated
+
+What **is** determinable from the capture, before entry:
+- the level he is targeting is the one his own indicator labels **BSL** (buy-side
+  liquidity), plotted above the entry; the position tool's profit zone runs to it;
+- the displayed **R:R 2.26** and **Stop 5.75** are on-screen, so the target is a level
+  roughly 13 ES points above entry;
+- his chart carries a **handful** of drawn levels — ORH/ORL, BSL, sweep and SMT markers.
+  **No FVGs are drawn on it at all.**
+
+What is **NOT** determinable: whether any nearer marked structure existed between entry
+and BSL. The capture resolution does not permit identifying intermediate levels, and his
+indicator plots only its own. **I cannot say from this exhibit whether he skipped nearer
+levels or whether none existed.**
+
+What it does support, used strictly as a falsification test and **not** to choose a rule
+that reproduces 2.26R: strict-nearest predicts this trade is **refused** (available R
+≈ 0). He took it. **That falsifies strict-nearest as a description of his behaviour** —
+and it does so independently of any economics, because it is a statement about whether
+the trade exists, not about whether it paid. It does **not** establish which of DRAW-NQ
+or DRAW-SQ is right; the 2.59R figure is the engine's construction from our level set,
+not his.
+
+Note also §D.11.4: his chart shows a handful of levels, the engine holds ~120. Some of
+the "nearest" pathology is level-set density, not selection rule.
+
 **Max's visual evidence is weaker and I am not going to pretend otherwise.** V11
 `0WddcphxAo8` ~514s and V10 `NF0qHcXp50o` ~820s were scoped for bar-by-bar capture and
 **were not captured**. Max's side of the sequence rests on explicit, repeated *verbal*
@@ -526,7 +640,9 @@ historical economics are computed.** Each is source-supported; the source is nam
 | **H16** | **[v2.1] Continuation arm exists and is separate** | A CONTINUATION arm is built, run and reported with its own n, gross and interval. No arm pools retest and continuation trades. | RR-003 R2; V12 37:09 |
 | **H17** | **[v2.1] Max's entry trigger is built** | The Max arm arms a **stop order at the reclaim candle's extreme** and fills only when the next bar trades through it — not "fill at the next bar's open". H10 must then show a non-zero non-fill count. In the v2.0 run all four arms used CeeWilli's close trigger, so **the Max entry model is still untested.** | R-009, R-039; V10 24:18, V11 08:34 |
 | **H18** | **[v2.1] MAX-S1 is floored** | No trade has `R < wick_floor`. Trades with `R -> 0` and unbounded R-multiples (max 699R in the v2.0 run) must disappear. | RR-003 R3; V13 05:57 |
-| **H19** | **[v2.2] RR gate is enforced** | Every CeeWilli entry satisfies `dist(entry→draw) >= 2 x dist(entry→stop)` at the moment of entry. Trades with no qualifying draw are **NO-TRADES, not no-target trades**: the "no target" bucket must be **empty**. (v2.0 run: 31.8% had no target, and carried all the apparent gross.) | Playbook §Risk: "Never take a trade unless your target is at least 2x your stop loss distance" |
+| **H19** | **[v2.2] RR gate is enforced** | Every CeeWilli entry satisfies `dist(entry→draw) >= 2 x dist(entry→stop)` at the moment of entry. Trades with no qualifying draw **anywhere above entry** are NO-TRADES: the "no target" bucket must be **empty**. | Playbook §Risk: "Never take a trade unless **your target** is at least 2x your stop loss distance" |
+| **H28** | **[v2.3] A nearer level never vetoes** | The `rr < 2` reject bucket must contain **only** setups where **no permitted level anywhere above entry** reaches 2R. A setup refused because a level *closer than a qualifying one* sat in the way is a **defect**. Concretely: the two panels where a 5-minute FVG on top of the entry refused the trade must now **pass**. | §D.11.3; playbook pro tip — an FVG at the ORB level is an **entry confluence**, not a target |
+| **H29** | **[v2.3] Draw selection runs as two arms** | DRAW-NQ and DRAW-SQ both built and reported. **Strict-nearest is not a cell.** | §D.11.2/3, U-25 |
 | **H20** | **[v2.2] Draw is pre-marked, no lookahead** | Every target level used by the gate is one of: previous session H/L, previous day H/L, New Week Opening Gap, 5m/15m FVG, 15m swing H/L — all computable **before 09:30**. No level derived from post-entry data. | Playbook pre-market checklist |
 | **H21** | **[v2.2] >=2-candle retest is Max-only** | The CeeWilli arm applies **no** candle count to the pullback. If the CeeWilli generator enforces >=2 interacting bars, it is running Max's rule on the wrong author. | §D.4 |
 | **H22** | **[v2.2] U-22 runs as two arms** | Arm (a) aborts the setup on any close back inside the ORB; arm (b) permits them. Both are built and reported. Neither is selected. | §D.5 |
@@ -556,6 +672,7 @@ Recorded because the **source** does not settle them — not as a to-do list.
 | U-15 | May direction flip after one side has broken? | Max's "no confirmations" wording implies yes; he never says it | **DECLARED:** yes — both sides remain eligible. Flagged as the choice most likely to matter. |
 | ~~U-16~~ | ~~Does CeeWilli have any invalidation rule?~~ | **[v2.2] CLOSED.** Playbook Entry 01: "If price returns back inside the ORB, the setup is invalidated"; Entry 04 confirms close-not-touch. | His own rule, EXPLICIT. Same event as Max's, arrived at independently. |
 | **U-22** | **[v2.2] After a genuine body close outside, may price close back INSIDE the ORB and still be an Entry-02 retest?** | Playbook Entry 01 says a return inside **invalidates**, and Entry 04 makes a body close inside the trigger for the **opposite** trade — but Entry 04's fake is defined as a **wick** through, which may not cover a prior body close outside. VRC-01 shows six inside closes then a long. | **Two arms (a) holds / (b) deep.** The single highest-value CeeWilli question: it decides whether the VRC-01 population exists. Do not choose. |
+| **U-25** | **[v2.3] Which permitted liquidity level is the intended DRAW when several qualify?** | The playbook gives an **unordered set** of target types and **no ranking**. Entry 02 step 4 says "target the next liquidity level" and, in the same step, "**You can hold for bigger targets**". C1 05:07 offers "either … or … **or all the way to** the previous day high". No worked example in the playbook shows a choice between competing levels. | **Classification D.** Two arms, **DRAW-NQ** and **DRAW-SQ** (§D.11.3). Strict-nearest **withdrawn**. Do not add a third arm without new primary evidence. |
 | **U-23** | **[v2.2] 1-minute or 5-minute execution for CeeWilli?** | His own backtest instruction says "**on a 5-min chart**" (Day 2); his pro tip says "1-min or 5-min"; VRC-01 is 1-minute. | **Run both.** Bar size drives stop distance, which drives the RR_GATE — not cosmetic. |
 | **U-24** | **[v2.2] Can CeeWilli's HTF bias be mechanised?** | **No.** Ten pages; "Overall market bias (bullish or bearish)" appears once, in the pre-market checklist, with **no method**, and **gates none of the four models**. | Precisely what stays discretionary: *a single binary pre-open judgement formed by an unstated method.* Test bias-free; record that the live trader is therefore more selective than the arm we measure. |
 | U-17 | MAX-S1 (≈9 pts) or MAX-S2 (≈25 pts)? | Both explicit, both Max, materially different; V1 41:00 says he uses neither | **Two arms.** Not resolvable by more reading. |

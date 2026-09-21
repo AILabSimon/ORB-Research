@@ -477,3 +477,53 @@ ending in a mentorship offer. "Highest probability" is his assertion, unevidence
 method *is* — which is all we asked it for.
 
 ### Analyst is CLEARED to rebuild, against v2.2, Max and CeeWilli separately.
+
+---
+
+## 2026-09-21 — RESEARCH: DRAW-SELECTION RULING (RESEARCH_CURRENT v2.3)
+
+**Classification D — the source does not resolve draw selection. Strict-nearest is
+WITHDRAWN and must not be run as a cell.**
+
+**Both sides of the contradiction were mine.** §E.2's "nearest pre-marked level" was my
+simplification of "target the next liquidity level"; §D.11's numbered list implied a
+priority the playbook never states. Corrected in v2.3.
+
+**What the source does settle — a nearer level NEVER vetoes:**
+- "Take partial profits at key levels. If your target is 4R away, consider locking in
+  half at 2R" — presupposes levels **between** entry and target.
+- Entry 02 step 4, same four lines as "target the next liquidity level": "**You can hold
+  for bigger targets.**"
+- The pro tip: a **1m/5m FVG at the ORB level** is "one of the strongest confluences" —
+  an **entry** positive. Under nearest it becomes the target and refuses the trade. Your
+  two reject panels (5m FVG on top of entry) are that inversion, and they must now pass.
+- The gate's own words are conditional on **your** target, not on the nearest thing above.
+- C1 05:07: "either Asian high or … or **all the way to** the previous day high."
+
+**Mechanical rule:** scan outward from entry; the draw is the **first permitted level
+that already satisfies >= 2R**. Non-qualifying nearer levels are partial-profit levels and
+are skipped. No qualifying level anywhere above entry → NO TRADE.
+
+**Two arms (16 cells total). Report both, select neither.**
+- **DRAW-NQ** — all permitted types (minus the opposite ORB level).
+- **DRAW-SQ** — prior-session structural only (prev session H/L, prev day H/L, NWOG, 15m
+  swing H/L); **FVGs excluded as targets**, because the only FVG the playbook places at a
+  specific price is the entry confluence, and the only one named as a target is "the next
+  **key** fair value gap" with "key" undefined.
+
+**New: H28** (the `rr<2` bucket may contain only setups where **nothing** above entry
+reaches 2R) and **H29** (both arms built; strict-nearest is not a cell). U-25 opened.
+
+**VRC-01:** his target is the level his indicator labels **BSL**; whether nearer
+structure existed is **NOT determinable** from the capture. Used only as falsification —
+strict-nearest predicts the trade is refused and he took it. It does **not** choose
+between NQ and SQ; 2.59R is the engine's construction from our level set, not his.
+
+**§D.11.4, and please weigh it:** his chart carries a handful of drawn levels and **no
+FVGs at all**; the engine holds ~120 across 12 types. Part of the "nearest" pathology is
+**level-set density**, not the selection rule. DRAW-SQ is the sparser reading. Recorded,
+not turned into a filter.
+
+**Your economics had no influence on this ruling** and I have not used them. Noted only
+so it is on the record: the §D.11 diagnostic you ran is not the same object as either arm
+above, so please rebuild rather than reusing it.
