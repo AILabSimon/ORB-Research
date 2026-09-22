@@ -1,0 +1,297 @@
+## NAS100   --  2754 ORB days  (2016-01-04 .. 2026-09-15)
+
+### 1. TOTAL ORB DAYS -> FIRST BREAK
+  total ORB days                  2754
+  ORH breaks first                1422  ( 51.6%)
+  ORL breaks first                1328  ( 48.2%)
+  no 1m close beyond either          4  (  0.1%)
+
+### 2. ORH BREAK (long side)  -- n=1422
+  retraces to the broken level    1341  ( 94.3%)
+  never retraces                    81  (  5.7%)
+  closes back inside the ORB      1271  ( 89.4%)
+  holds outside all session        151  ( 10.6%)
+
+### 3. ORH BREAK (long side) + RETRACE  -- n=1341   (first confirmation to fire)
+  continuation                   330  ( 24.6%)
+  failed-break                   760  ( 56.7%)
+  neither                        251  ( 18.7%)
+
+### 4. FAILED ORH BREAK  -- n=760   (draws after invalidation)
+  midline reached                  685  ( 90.1%)
+  OPPOSITE ORB boundary reached    521  ( 68.6%)
+  opposite NOT reached             239  ( 31.4%)
+  median minutes invalidation->opposite   45   (IQR 18-111)
+
+### 2. ORL BREAK (short side)  -- n=1328
+  retraces to the broken level    1270  ( 95.6%)
+  never retraces                    58  (  4.4%)
+  closes back inside the ORB      1227  ( 92.4%)
+  holds outside all session        101  (  7.6%)
+
+### 3. ORL BREAK (short side) + RETRACE  -- n=1270   (first confirmation to fire)
+  continuation                   282  ( 22.2%)
+  failed-break                   760  ( 59.8%)
+  neither                        228  ( 18.0%)
+
+### 4. FAILED ORL BREAK  -- n=760   (draws after invalidation)
+  midline reached                  695  ( 91.4%)
+  OPPOSITE ORB boundary reached    555  ( 73.0%)
+  opposite NOT reached             205  ( 27.0%)
+  median minutes invalidation->opposite   55   (IQR 24-136)
+
+### 5. BASE RATE OF REACHING THE OPPOSITE BOUNDARY  (all broken days, by outcome)
+  continuation   n=  612   opposite reached after invalidation   262  ( 42.8%)
+  failed-break   n= 1520   opposite reached after invalidation  1076  ( 70.8%)
+  neither        n=  618   opposite reached after invalidation     4  (  0.6%)
+  NOTE: opp_reached is measured only AFTER the FIRST 1m close back inside the ORB. On a
+        'continuation' day that close occurs LATER than the continuation confirmation, so the
+        continuation row counts days that ran, then failed, then reversed all the way across.
+
+### 6. CONSOLIDATION AFTER THE RETRACE  (neither a newer high nor a newer low)
+  10-bar window:   706  ( 27.0%)   of which continuation   27  failed-break  441  neither  238
+  20-bar window:   443  ( 17.0%)   of which continuation   14  failed-break  260  neither  169
+  30-bar window:   310  ( 11.9%)   of which continuation    7  failed-break  171  neither  132
+
+### 7. CROSS-TAB WITH EXTERNAL FVG PRESENT (1m, formed any time before the outcome)
+                            FVG opposite side PRESENT             ABSENT
+  continuation                    407      22.6%        205    21.6%
+  failed-break                   1020      56.6%        500    52.8%
+  neither                         376      20.9%        242    25.6%
+  totals                         1803                   947
+  failed-break -> opposite ORB reached | FVG present  69.7%  (n=1020)   | absent  73.0%  (n=500)
+
+
+## US500   --  2753 ORB days  (2016-01-04 .. 2026-09-15)
+
+### 1. TOTAL ORB DAYS -> FIRST BREAK
+  total ORB days                  2753
+  ORH breaks first                1418  ( 51.5%)
+  ORL breaks first                1331  ( 48.3%)
+  no 1m close beyond either          4  (  0.1%)
+
+### 2. ORH BREAK (long side)  -- n=1418
+  retraces to the broken level    1336  ( 94.2%)
+  never retraces                    82  (  5.8%)
+  closes back inside the ORB      1272  ( 89.7%)
+  holds outside all session        146  ( 10.3%)
+
+### 3. ORH BREAK (long side) + RETRACE  -- n=1336   (first confirmation to fire)
+  continuation                   327  ( 24.5%)
+  failed-break                   785  ( 58.8%)
+  neither                        224  ( 16.8%)
+
+### 4. FAILED ORH BREAK  -- n=785   (draws after invalidation)
+  midline reached                  729  ( 92.9%)
+  OPPOSITE ORB boundary reached    593  ( 75.5%)
+  opposite NOT reached             192  ( 24.5%)
+  median minutes invalidation->opposite   42   (IQR 17-105)
+
+### 2. ORL BREAK (short side)  -- n=1331
+  retraces to the broken level    1275  ( 95.8%)
+  never retraces                    56  (  4.2%)
+  closes back inside the ORB      1240  ( 93.2%)
+  holds outside all session         91  (  6.8%)
+
+### 3. ORL BREAK (short side) + RETRACE  -- n=1275   (first confirmation to fire)
+  continuation                   304  ( 23.8%)
+  failed-break                   804  ( 63.1%)
+  neither                        167  ( 13.1%)
+
+### 4. FAILED ORL BREAK  -- n=804   (draws after invalidation)
+  midline reached                  761  ( 94.7%)
+  OPPOSITE ORB boundary reached    636  ( 79.1%)
+  opposite NOT reached             168  ( 20.9%)
+  median minutes invalidation->opposite   50   (IQR 20-128)
+
+### 5. BASE RATE OF REACHING THE OPPOSITE BOUNDARY  (all broken days, by outcome)
+  continuation   n=  631   opposite reached after invalidation   305  ( 48.3%)
+  failed-break   n= 1589   opposite reached after invalidation  1229  ( 77.3%)
+  neither        n=  529   opposite reached after invalidation     5  (  0.9%)
+  NOTE: opp_reached is measured only AFTER the FIRST 1m close back inside the ORB. On a
+        'continuation' day that close occurs LATER than the continuation confirmation, so the
+        continuation row counts days that ran, then failed, then reversed all the way across.
+
+### 6. CONSOLIDATION AFTER THE RETRACE  (neither a newer high nor a newer low)
+  10-bar window:   687  ( 26.3%)   of which continuation   22  failed-break  482  neither  183
+  20-bar window:   374  ( 14.3%)   of which continuation    9  failed-break  251  neither  114
+  30-bar window:   252  (  9.7%)   of which continuation    6  failed-break  164  neither   82
+
+### 7. CROSS-TAB WITH EXTERNAL FVG PRESENT (1m, formed any time before the outcome)
+                            FVG opposite side PRESENT             ABSENT
+  continuation                    441      22.8%        190    23.3%
+  failed-break                   1133      58.6%        456    55.9%
+  neither                         359      18.6%        170    20.8%
+  totals                         1933                   816
+  failed-break -> opposite ORB reached | FVG present  77.3%  (n=1133)   | absent  77.4%  (n=456)
+## NAS100  BASE-RATE CONTROL  (n broken days = 2750)
+  Unconditional: after the first break, does price ever touch the OPPOSITE ORB boundary
+  before 16:00?  (this is the quantity the failed-break state is supposed to predict)
+  ALL broken days                 opp reached  48.8%   midline  69.6%   n=2750
+  continuation           opp reached  43.0%   midline  63.2%   n=612
+  failed-break           opp reached  70.8%   midline  90.8%   n=1520
+  neither                opp reached   0.6%   midline  23.8%   n=618
+  LIFT of failed-break vs all broken days: +22.0 pp
+  LIFT of failed-break vs NOT-failed-break: +49.1 pp
+  of failed-break days that reach the opposite boundary (n=1076),
+    confirmation fires BEFORE the opposite touch: 915 (85.0%)
+    median minutes confirmation -> opposite touch: 21  (IQR 6-60)
+
+## US500  BASE-RATE CONTROL  (n broken days = 2749)
+  Unconditional: after the first break, does price ever touch the OPPOSITE ORB boundary
+  before 16:00?  (this is the quantity the failed-break state is supposed to predict)
+  ALL broken days                 opp reached  56.0%   midline  73.9%   n=2749
+  continuation           opp reached  48.3%   midline  65.8%   n=631
+  failed-break           opp reached  77.3%   midline  93.8%   n=1589
+  neither                opp reached   1.1%   midline  24.0%   n=529
+  LIFT of failed-break vs all broken days: +21.3 pp
+  LIFT of failed-break vs NOT-failed-break: +50.5 pp
+  of failed-break days that reach the opposite boundary (n=1229),
+    confirmation fires BEFORE the opposite touch: 963 (78.4%)
+    median minutes confirmation -> opposite touch: 20  (IQR 6-61)
+## NAS100  MATCHED CONTROL -- does the CONFIRMATION add anything to the INVALIDATION?
+  all days that closed back inside the ORB      n= 2498   opp reached  53.8%
+    ... AND made a newer extreme against (conf)  n= 1888   opp reached  70.8%
+    ... and did NOT (no confirmation)            n=  610   opp reached   1.1%
+    LIFT of the confirmation over the bare invalidation: +17.0 pp
+
+  Decomposition of the 'neither' bucket (why its opp rate is near zero):
+    neither n=618   of which held outside all session 139 (22.5%)
+    -> a day that never closes back inside CANNOT reach the opposite boundary; the
+       'neither' row is therefore not an independent control.
+
+  Clean like-for-like (both states require a retrace):
+    failed-break n= 1520 opp  70.8%   vs continuation n=  612 opp  43.0%   diff +27.8 pp
+
+  ORB WIDTH (W) quartiles vs failed-break rate and opposite-reach rate:
+    Q1 narrow  n=  653  median W   15.33  failed-break  57.6%  opp reached  51.6%
+    Q2         n=  653  median W   38.45  failed-break  57.7%  opp reached  54.2%
+    Q3         n=  652  median W   67.10  failed-break  60.0%  opp reached  52.3%
+    Q4 wide    n=  653  median W  117.55  failed-break  57.6%  opp reached  47.6%
+
+  YEAR-BY-YEAR STABILITY of the failed-break -> opposite-boundary rate:
+    2016  n= 142  opp reached  71.8%
+    2017  n= 135  opp reached  74.1%
+    2018  n= 147  opp reached  71.4%
+    2019  n= 143  opp reached  68.5%
+    2020  n= 136  opp reached  74.3%
+    2021  n= 131  opp reached  66.4%
+    2022  n= 135  opp reached  74.8%
+    2023  n= 155  opp reached  70.3%
+    2024  n= 147  opp reached  72.1%
+    2025  n= 139  opp reached  69.1%
+    2026  n= 110  opp reached  64.5%
+
+## US500  MATCHED CONTROL -- does the CONFIRMATION add anything to the INVALIDATION?
+  all days that closed back inside the ORB      n= 2512   opp reached  61.3%
+    ... AND made a newer extreme against (conf)  n= 2000   opp reached  76.6%
+    ... and did NOT (no confirmation)            n=  512   opp reached   1.6%
+    LIFT of the confirmation over the bare invalidation: +15.3 pp
+
+  Decomposition of the 'neither' bucket (why its opp rate is near zero):
+    neither n=529   of which held outside all session 140 (26.5%)
+    -> a day that never closes back inside CANNOT reach the opposite boundary; the
+       'neither' row is therefore not an independent control.
+
+  Clean like-for-like (both states require a retrace):
+    failed-break n= 1589 opp  77.3%   vs continuation n=  631 opp  48.3%   diff +29.0 pp
+
+  ORB WIDTH (W) quartiles vs failed-break rate and opposite-reach rate:
+    Q1 narrow  n=  653  median W    4.10  failed-break  65.8%  opp reached  63.4%
+    Q2         n=  657  median W    7.50  failed-break  58.9%  opp reached  60.1%
+    Q3         n=  648  median W   12.01  failed-break  62.5%  opp reached  58.3%
+    Q4 wide    n=  653  median W   21.89  failed-break  56.2%  opp reached  54.1%
+
+  YEAR-BY-YEAR STABILITY of the failed-break -> opposite-boundary rate:
+    2016  n= 157  opp reached  79.0%
+    2017  n= 148  opp reached  77.0%
+    2018  n= 161  opp reached  78.3%
+    2019  n= 152  opp reached  76.3%
+    2020  n= 154  opp reached  78.6%
+    2021  n= 125  opp reached  74.4%
+    2022  n= 152  opp reached  75.0%
+    2023  n= 134  opp reached  79.1%
+    2024  n= 155  opp reached  84.5%
+    2025  n= 147  opp reached  75.5%
+    2026  n= 104  opp reached  70.2%
+## NAS100  WHERE IS PRICE WHEN THE FAILED-BREAK CONFIRMATION PRINTS?   n=1888
+  'remaining' = distance from the confirmation close to the opposite ORB boundary,
+  in ORB widths. 1.00 = confirmation prints at the broken boundary (full box to go).
+  <=0 = price is already at or beyond the opposite boundary when the confirmation prints.
+    p5=-0.06  p10=+0.05  p25=+0.28  p50=+0.54  p75=+0.75  p90=+0.88  p95=+0.94
+    remaining <=0.00  already there    n=  146 ( 7.7%)  reach opposite AFTER confirm   0.0%
+    remaining 0.00-0.25                n=  278 (14.7%)  reach opposite AFTER confirm  79.1%
+    remaining 0.25-0.50                n=  423 (22.4%)  reach opposite AFTER confirm  79.4%
+    remaining 0.50-0.75                n=  567 (30.0%)  reach opposite AFTER confirm  65.4%
+    remaining 0.75-1.00                n=  422 (22.4%)  reach opposite AFTER confirm  46.4%
+    remaining >1.00 still outside box  n=   52 ( 2.8%)  reach opposite AFTER confirm  30.8%
+  median remaining at confirmation: +0.54 W
+  confirmations printing with LESS than a quarter-box left: 22.5%
+
+  Clock time of the confirmation:
+    09:45-10:00  n=  580 (30.7%)  reach opposite after confirm  60.5%  median remaining +0.74W
+    10:00-11:00  n=  762 (40.4%)  reach opposite after confirm  64.4%  median remaining +0.47W
+    11:00-13:00  n=  342 (18.1%)  reach opposite after confirm  56.1%  median remaining +0.35W
+    13:00-15:00  n=  141 ( 7.5%)  reach opposite after confirm  56.7%  median remaining +0.33W
+    15:00-16:00  n=   63 ( 3.3%)  reach opposite after confirm  39.7%  median remaining +0.29W
+
+## US500  WHERE IS PRICE WHEN THE FAILED-BREAK CONFIRMATION PRINTS?   n=2000
+  'remaining' = distance from the confirmation close to the opposite ORB boundary,
+  in ORB widths. 1.00 = confirmation prints at the broken boundary (full box to go).
+  <=0 = price is already at or beyond the opposite boundary when the confirmation prints.
+    p5=-0.11  p10=-0.01  p25=+0.21  p50=+0.51  p75=+0.74  p90=+0.88  p95=+0.94
+    remaining <=0.00  already there    n=  211 (10.6%)  reach opposite AFTER confirm   0.0%
+    remaining 0.00-0.25                n=  348 (17.4%)  reach opposite AFTER confirm  67.0%
+    remaining 0.25-0.50                n=  427 (21.4%)  reach opposite AFTER confirm  80.6%
+    remaining 0.50-0.75                n=  540 (27.0%)  reach opposite AFTER confirm  66.5%
+    remaining 0.75-1.00                n=  437 (21.9%)  reach opposite AFTER confirm  59.3%
+    remaining >1.00 still outside box  n=   37 ( 1.9%)  reach opposite AFTER confirm  56.8%
+  median remaining at confirmation: +0.51 W
+  confirmations printing with LESS than a quarter-box left: 28.0%
+
+  Clock time of the confirmation:
+    09:45-10:00  n=  597 (29.9%)  reach opposite after confirm  67.8%  median remaining +0.74W
+    10:00-11:00  n=  818 (40.9%)  reach opposite after confirm  60.6%  median remaining +0.44W
+    11:00-13:00  n=  359 (17.9%)  reach opposite after confirm  56.8%  median remaining +0.28W
+    13:00-15:00  n=  156 ( 7.8%)  reach opposite after confirm  53.8%  median remaining +0.29W
+    15:00-16:00  n=   70 ( 3.5%)  reach opposite after confirm  38.6%  median remaining +0.22W
+## NAS100  TIMING OF THE FAILED-BREAK CONFIRMATION RELATIVE TO THE DRAW   n=1888
+  opposite boundary reached AFTER confirmation (actionable)   1139  ( 60.3%)
+  opposite boundary already reached BEFORE confirmation        197  ( 10.4%)   <- confirmation arrives after the move
+  opposite boundary never reached                              552  ( 29.2%)
+  midline already crossed BEFORE the confirmation             1015  ( 53.8%)
+    -> V8 [18:07] 'take profit on the break of the midline' is ALREADY BEHIND the trade
+       on 54% of confirmed failed breaks. TP1 as stated is unreachable on those days.
+
+  Of the 552 that never reach it, travel toward it as a fraction of W (n=549):
+    p10=0.26  p25=0.44  p50=0.65  p75=0.83  p90=0.93
+    >=0.50W 68.7%   >=0.75W 36.4%   max 1.00W
+
+## US500  TIMING OF THE FAILED-BREAK CONFIRMATION RELATIVE TO THE DRAW   n=2000
+  opposite boundary reached AFTER confirmation (actionable)   1216  ( 60.8%)
+  opposite boundary already reached BEFORE confirmation        316  ( 15.8%)   <- confirmation arrives after the move
+  opposite boundary never reached                              468  ( 23.4%)
+  midline already crossed BEFORE the confirmation             1153  ( 57.6%)
+    -> V8 [18:07] 'take profit on the break of the midline' is ALREADY BEHIND the trade
+       on 58% of confirmed failed breaks. TP1 as stated is unreachable on those days.
+
+  Of the 468 that never reach it, travel toward it as a fraction of W (n=465):
+    p10=0.29  p25=0.47  p50=0.66  p75=0.83  p90=0.92
+    >=0.50W 70.8%   >=0.75W 37.2%   max 1.00W
+## HEAD-TO-HEAD: the two sources' FAILED-BREAK TRIGGERS, same days, same target
+  CeeWilli Entry 04  : trigger = candle BODY closes back inside the ORB. Target = opposite ORB.
+  Max V8 [16:33]     : the close back inside is INVALIDATION ONLY; the trigger is the
+                       subsequent newer extreme AGAINST. Target = midline, then opposite ORB.
+  Both measured strictly FORWARD from their own trigger bar.
+
+### NAS100   (2750 broken days; unconditional opposite-reach 48.8%)
+  CeeWilli E04 trigger  n= 2498 (90.8% of broken days)   opposite after trigger  53.6%   midline after trigger  75.7%
+  Max V8 trigger        n= 1888 (68.7% of broken days)   opposite after trigger  60.3%   midline after trigger  37.4%
+  -> Max's extra confirmation costs 610 setups (24.4% of CeeWilli's) and changes the forward hit rate by +6.7 pp
+  -> lift over the unconditional base: CeeWilli +4.8 pp   Max +11.5 pp
+
+### US500   (2749 broken days; unconditional opposite-reach 56.0%)
+  CeeWilli E04 trigger  n= 2512 (91.4% of broken days)   opposite after trigger  61.0%   midline after trigger  79.2%
+  Max V8 trigger        n= 2000 (72.8% of broken days)   opposite after trigger  60.8%   midline after trigger  35.9%
+  -> Max's extra confirmation costs 512 setups (20.4% of CeeWilli's) and changes the forward hit rate by -0.2 pp
+  -> lift over the unconditional base: CeeWilli +5.0 pp   Max +4.8 pp

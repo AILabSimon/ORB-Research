@@ -52,3 +52,44 @@ Compared conceptually only; results never pooled. The structural contrast suppor
 
 ## 2026-09-12 — X-011: highest-value action is DATA ACQUISITION, not more analysis
 NQ/MNQ first, then GC/MGC. Do not extend the market panel. Do not filter the cost-destroyed arms.
+
+## 2026-09-22 — D-060: RECORD CORRECTION — Max HAS a mechanical bias rule
+V5 [10:43]-[11:37] states a complete deterministic price-vs-midline bias rule. The standing note
+"no mechanical bias definition exists in the Max corpus" was wrong and is retired. The quotation
+was in the transcript extract the whole time; this was a reading failure, not a data gap.
+
+## 2026-09-22 — D-061: conditional failed-break hit rates are NOT to be quoted as the effect size
+The 70.8% / 77.3% figures condition on an event that is itself on the causal path to the outcome
+and are measured from the break, not from the trigger. The only quotable numbers are the
+forward-measured ones against the unconditional base: +4.8 to +11.5 pp. Recorded so the larger
+numbers cannot re-enter a later summary.
+
+## 2026-09-22 — D-062: much of the failed-break "edge" is geometry, not signal
+Median distance remaining at the confirmation bar is 0.51-0.54 ORB widths. Hit rate falls to
+46-59% where a full box remains and rises to ~79% where a quarter-box remains. Any future
+economics must condition on remaining distance or it will report the geometry as an edge.
+
+## 2026-09-22 — D-063: external FVG is NOT the continuation/failure discriminator
+Within the failed-break population, far-side FVG present vs absent: 69.7% vs 73.0% (NAS100),
+77.3% vs 77.4% (US500). Null on both. This does not overturn the earlier FVG-touch result
+(different conditioning event) but it closes FVG as the state discriminator.
+
+## 2026-09-22 — D-064: "it needs to hold outside of it" (V4 05:37) is NOT elapsed time
+Opposite-reach by minutes held outside before invalidating: 70.3/74.1/65.4/72.1/62.1% (NAS100).
+Flat. The obvious mechanisation is falsified. No replacement invented. Requires screenshot D4 —
+a break Max REJECTED for not holding outside. Positive examples cannot resolve it.
+
+## 2026-09-22 — D-065: Max's midline TP1 is internally inconsistent with his failed-break trigger
+Midline already crossed before the confirmation on 53.8% / 57.6% of confirmed failed breaks.
+Escalated to Research as a source-interpretation question, not resolved by the Analyst.
+
+## 2026-09-22 — D-066: consolidation-then-failure (~17:1) is the only live lead; NOT acted on
+10-bar: failed-break 441 vs continuation 27 (NAS100), 482 vs 22 (US500). The window length is a
+free parameter. Three windows reported, none chosen. Measuring it properly is next cycle's work;
+selecting a window on this data would be the optimisation the mandate forbids.
+
+## 2026-09-22 — D-067: figure review changed the reported finding
+Panel inspection of FAILED_BREAK_TIMING.png revealed days where the confirmation bar and the
+opposite-touch bar coincide, because the "newer extreme against" reference sits at the opposite
+boundary. That observation produced the remaining-distance analysis (D-062). Without the visual
+review the conditional 70.8% would have been published as the result.

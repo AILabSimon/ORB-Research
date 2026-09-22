@@ -1,6 +1,59 @@
 # ANALYST_CURRENT
-**21 Sep 2026 · Analyst Agent · v2.3 cycle EXECUTED locally against the canonical market-data store**
-Sections: **CEEWILLI V2.3 — CURRENT** · **MAX V2.1 — PENDING SEPARATE CYCLE** · **V2.0/V2.2 — SUPERSEDED**
+**22 Sep 2026 · Analyst Agent · CORE-STRATEGY RECONSTRUCTION cycle complete**
+Sections: **CORE STRATEGY — CURRENT** · **CEEWILLI V2.3** · **MAX V2.1 — PENDING** · **V2.0/V2.2 — SUPERSEDED**
+
+---
+# CORE STRATEGY RECONSTRUCTION — CURRENT (22 Sep 2026)
+
+Full report: `13_CROSS_MARKET/OUTPUTS/CORE_STRATEGY_RECONSTRUCTION.md`
+Raw counts: `13_CROSS_MARKET/OUTPUTS/CORE_STRATEGY_COUNT_APPENDIX.txt`
+Figures: `13_CROSS_MARKET/OUTPUTS/FIGS/CORE_PATH/`
+Code: `orb_path_census.py`, `orb_path_tabulate.py`, `orb_path_basecontrol.py`, `orb_path_figs.py`, `orb_failbreak_figs.py`
+
+Counts only. No economics, no thresholds, no optimisation. 2754 NAS100 + 2753 US500 ORB days.
+
+**1. The failed break is the modal outcome.** Of days that break and retrace: failed-break
+57-63%, continuation 22-25%, neither 13-19%. Symmetric across both sides and both instruments.
+
+**2. Honest effect size, measured strictly forward from each trigger, vs the unconditional
+opposite-reach base rate (NAS100 48.8% / US500 56.0%):**
+| trigger | NAS100 | US500 |
+|---|---|---|
+| CeeWilli E04 — close back inside | 53.6% (+4.8 pp) | 61.0% (+5.0 pp) |
+| Max V8 — close inside **then** newer extreme against | 60.3% (+11.5 pp) | 60.8% (+4.8 pp) |
+Not the +20-29 pp the conditional tables imply. Stable year-by-year 2016-2026.
+
+**3. Why: the confirmation prints late.** Median distance left to the opposite boundary at the
+confirmation bar is **+0.54 W / +0.51 W** — half the box. Where a full box remains the hit rate
+falls to 46-59%. Much of the apparent edge is geometry.
+
+**4. Max's midline TP1 contradicts Max's own failed-break trigger.** The midline was already
+crossed before the confirmation on **53.8% / 57.6%** of confirmed failed breaks. V8 [18:07]
+TP1 is unreachable on more than half the setups it describes. → Research question.
+
+**5. RECORD CORRECTION — Max DOES have a mechanical bias rule.** V5 [10:43]-[11:37]: *"Take the
+orb midline. If it's below the orb midline … we are bearish. If we are above the orb midline,
+we are bullish."* The standing "no mechanical bias definition exists" note is **retired.**
+
+**6. Candidate discriminators — all flat.** ORB width (57.6/57.7/60.0/57.6% failed-break by
+quartile); minutes held outside before invalidating (70.3/74.1/65.4/72.1/62.1% opposite-reach —
+flat, a direct negative against the obvious reading of V4 [05:37] "it needs to hold outside of
+it"); **external FVG on the far side — NULL on both instruments** (69.7% vs 73.0%; 77.3% vs 77.4%).
+FVG is not the continuation/failure discriminator.
+
+**7. The one live lead: consolidation → failure ~17:1.** 10-bar consolidation after the retrace
+resolved failed-break 441 vs continuation 27 (NAS100), 482 vs 22 (US500). Window length is a free
+parameter; three values reported, none chosen. Next cycle.
+
+**8. Continuation is under-specified in BOTH corpora.** Max "it needs to hold outside of it" has
+no duration anywhere in V1-V12; CeeWilli E02 "rejects it" is undefined in Entry 02. **No
+confirmation was invented.** Blocking screenshots: **D1** (CeeWilli marking an E02 rejection
+candle) and **D4** (Max marking a break he *rejected* for not holding outside — a negative
+example; positive ones cannot resolve it). Full list in §10 of the report.
+
+**9. Analyst limits.** No video files, PDFs or CeeWilli C1-C4 transcripts exist locally. V1-V12
+are the Research Agent's evidence extracts, not full transcripts. **Fresh video review remains
+Research Agent work.** CeeWilli's reconstruction rests entirely on the playbook audit.
 
 ---
 # CEEWILLI V2.3 — CURRENT (executed)
