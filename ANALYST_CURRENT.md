@@ -1,14 +1,25 @@
 # ANALYST_CURRENT
-**22 Sep 2026 · Analyst Agent · CORE-STRATEGY RECONSTRUCTION cycle complete**
+**22 Sep 2026 · Analyst Agent · CORE-STRATEGY RECONSTRUCTION cycle complete, + addendum cycle 2**
 Sections: **CORE STRATEGY — CURRENT** · **CEEWILLI V2.3** · **MAX V2.1 — PENDING** · **V2.0/V2.2 — SUPERSEDED**
+
+**Addendum (22 Sep 2026b, this issue's continuation request):** re-reviewed V1-V12 and
+the CeeWilli sources for the hover/consolidation and one-two-punch questions. No
+market-data access or Python execution was available in that sandbox, so this is a
+source-evidence and mechanisation pass, not new counts — see §13 of the full report for
+the two findings (CeeWilli's "rejects it" is already mechanically defined in
+`RESEARCH_CURRENT.md` §D.6, narrower than previously stated; Max's "three bar" pattern
+gives an event-based, unfitted definition of the hover state) and
+`13_CROSS_MARKET/CODE/orb_path_census_v2.py` (new, untested, pending local validation)
+for the one-two-punch / event-consolidation code.
 
 ---
 # CORE STRATEGY RECONSTRUCTION — CURRENT (22 Sep 2026)
 
-Full report: `13_CROSS_MARKET/OUTPUTS/CORE_STRATEGY_RECONSTRUCTION.md`
+Full report: `13_CROSS_MARKET/OUTPUTS/CORE_STRATEGY_RECONSTRUCTION.md` (§§1-12 first
+cycle, §13 addendum)
 Raw counts: `13_CROSS_MARKET/OUTPUTS/CORE_STRATEGY_COUNT_APPENDIX.txt`
 Figures: `13_CROSS_MARKET/OUTPUTS/FIGS/CORE_PATH/`
-Code: `orb_path_census.py`, `orb_path_tabulate.py`, `orb_path_basecontrol.py`, `orb_path_figs.py`, `orb_failbreak_figs.py`
+Code: `orb_path_census.py`, `orb_path_tabulate.py`, `orb_path_basecontrol.py`, `orb_path_figs.py`, `orb_failbreak_figs.py`, `orb_path_census_v2.py` (new, untested — hover/one-two-punch mechanisation)
 
 Counts only. No economics, no thresholds, no optimisation. 2754 NAS100 + 2753 US500 ORB days.
 

@@ -448,3 +448,340 @@ refinement.
    population.
 6. **Consolidation-then-failure (~17:1) is the one live lead.** Next cycle should measure it
    properly — including the window-length sensitivity — before anything else.
+
+---
+
+## 13. CYCLE 2 ADDENDUM — SOURCE RE-REVIEW AND MECHANISATION (Analyst, 22 Sep 2026b)
+
+**Everything in §§1-12 above is unchanged and preserved as historical evidence from the
+first reconstruction cycle.** This addendum is a second, same-day pass requested to
+re-review V1-V12 and the CeeWilli sources specifically for the hover/consolidation
+structure, the one-two-punch, and the "rejects it" gap. **No market-data access and no
+Python execution were available in this sandbox this cycle** (same blocker as the
+`claude/issue-3-20260921-*` cycles on this issue) — §§13.5-13.7 are specifications and
+code for the next local run, not new counts. Nothing below revises the counts in §§1-12;
+it revises what should be *measured next* and corrects one mischaracterisation.
+
+### 13.1 Correction: CeeWilli's "rejects it" is not actually undefined
+
+§10 item 2 of this report (first cycle) states: *"'Rejects it.' Undefined in Entry 02
+... Whether \[Entry 03's definition\] is intended to carry over to Entry 02 is unknown
+and must not be assumed."* Re-reading `RESEARCH_CURRENT.md` against the CeeWilli
+playbook audit shows this overstates the gap. **§D.6 of `RESEARCH_CURRENT.md` (v2.2)
+already makes exactly that carry-over, explicitly and by name:**
+
+> "The mechanical form is given explicitly in Entry 03 and carries over: 'a strong
+> reversal candle closes back on the correct side of the level.' **REJECTION candle
+> (long) = a candle that interacts with ORH (`low <= ORH <= high`) and closes above
+> ORH.**" — classified EXPLICIT (03) / STRONGLY IMPLIED (02).
+
+This is also independently corroborated by the CeewilliTradez video evidence (C1-C4,
+same author as the playbook — confirmed by `RESEARCH_CURRENT.md`'s own source line
+"@MaxOptionsTrading (V1-V14) · @CeewilliTradez (C1-C4)"), which `RESEARCH_CURRENT.md`
+already cites for exactly this state:
+- C1 [04:41] "I'm just waiting for another **body stick candle closure**. Okay, so I get
+  a body stick candle closure right here. Boom, it's entered in here."
+- C4 [05:36] "We don't just want a wick. We want a lot of displacement outside of the
+  orb." — confirming a wick alone does not qualify (matches D.6's `close above ORH`,
+  not `high above ORH`).
+- C2 [03:34] "Wait, confirmation, execute" — the three-step frame this candle sits in.
+
+**What is genuinely still open is narrower than "rejects it is undefined."** It is U-22
+(`RESEARCH_CURRENT.md` §D.5): *whether a genuine body close back inside the ORB, before
+the rejection candle, invalidates the setup or is compatible with a deep Entry-02
+retest.* That is a real, unresolved contradiction (playbook Entry 01's unconditional
+invalidation vs. CeeWilli's own worked example VRC-01, which shows six consecutive 1m
+closes back inside before the entry) — and it is **already being run as two arms**, HOLD
+and DEEP, in the v2.3 CeeWilli Entry-02 rebuild this issue commissioned separately. It
+does not need re-opening here; it needs the results of that run.
+
+**Correction to carry forward:** CeeWilli's rejection candle has a stated mechanical
+definition (§D.6) borrowed explicitly from Entry 03 by the Research Agent's own ruling.
+The open question is not "what does rejection mean" but "does a prior close-back-inside
+disqualify it" (U-22 / HOLD vs DEEP). Bias remains genuinely unresolved for CeeWilli, as
+the first cycle found — the playbook gives no method anywhere and this addendum found no
+new evidence that changes that (§13.8, item 3).
+
+### 13.2 MAX — refined event sequence: three-bar and the double-retest pattern
+
+Re-reading V1-V12 beyond the passages already quoted in §1 surfaced a primitive not used
+in the first cycle: **the "three bar" pattern**, stated independently in two videos and
+tied explicitly to ORB by a third.
+
+- V2 [41:21]-[42:03]: "the market can only do two things. Trend, range, trend ... A
+  three bar is just a three to four candlestick pattern that perfectly displays this. So,
+  we trend up, we range within the candle body, and then we continue upwards ... **Bar
+  number one. Bar number two. Bar number three is the continuation pattern.**" [42:03]
+  "You wait for bar number two to form. **As soon as bar number three breaks above bar
+  number two, you enter the trade** with a stop-loss at the bottom or right below candle
+  2's wick."
+- V5 [15:02]-[16:22]: "what we're looking for is a green candle, red candle — it doesn't
+  have to be red — and then a continuation candle. What it's really just showing you is
+  **trend, range, trend**." [16:49] "**These candles work significantly better around
+  areas of liquidity like orb.**"
+- V2 [18:41]: "I only trade two candlestick patterns. I only trade two, **break and
+  retest and a three bar.**" — presented as a second, general-purpose pattern, not
+  explicitly stated to *be* the ORB hover. The V5 [16:49] proximity endorsement is the
+  only stated link between the two. **This is a plausible, source-consistent
+  mechanisation, not a proven identity — flagged, not assumed.**
+
+**Why this matters for the hover/consolidation question (item 3/4 of the mandate).**
+Bar 2 of the three-bar pattern — "we range within the candle body" — is structurally the
+same primitive V1 uses for consolidation: "we failed to make a newer high, we failed to
+make a newer low" (V1 [20:34]). Bar 3 is the event that ends it, in either direction. So
+the source's own vocabulary already supplies an **event-based start and end for the
+hover state**, without inventing a bar count:
+
+```
+START:  first bar after the retrace that fails to extend the post-break extreme
+        (a "range" bar — V1's "failed to make a newer high, failed to make a newer low")
+HOVER:  however many consecutive bars keep failing to extend it (length is MEASURED,
+        never chosen)
+END:    the first bar that either
+          (a) extends the extreme in the break direction  -> CONTINUATION (three-bar's
+              "bar 3 breaks above bar 2")
+          (b) sets a newer extreme in the OPPOSITE direction -> FAILURE
+              (V8 [16:33] "this confirmation, newer low")
+```
+
+This is a direct answer to the mandate's question — *"what event finally distinguishes
+continuation from failure?"* — read from the source's own words: **not a duration, an
+outcome.** The hover ends when it ends; what matters is which side resolves it first,
+and §13.3 below gives it as code, not a fitted window.
+
+**The double-retest pattern, independently corroborated three times.** Re-reading V8's
+"one-two punch" passage in full alongside two other passages not previously connected to
+it in this programme's reconstructions:
+
+- V8 [11:18]-[12:20]: "the one-two punch is always going to be the fail and the retest
+  ... when you get the retest of the candle or the liquidity zone and it fails, this
+  candle here was entry 100% ... **the second retest candle that failed and closed
+  outside of orb — the second this candle made a newer low, that's the retest
+  confirmation** and this was your entry today."
+- V8 [14:52] (blind bar-replay, a different, bullish example): "close outside of orb,
+  **retest, retest**, breakout, the higher high ... this is your entry."
+- V12 [27:23]: "the retest is always the best way to go ... **retest, doji retest**,
+  usually could pump to a newer high."
+
+**Reading, stated plainly (ASR transcript, so flagged rather than asserted as certain):**
+the one-two-punch is a **continuation-side** confirmation — the break holds, price
+retests the broken level and is rejected *twice* (never reclaiming it), and the second
+rejection prints a newer extreme in the break direction. This is a stricter, doubly
+confirmed version of the simple print-through trigger already measured in §1 row 7, not
+a third failure trigger. Three independent passages across two videos describe
+continuation this way; none describes it as a single event. **This reframes "it needs to
+hold outside of it" (V4 [05:37]) as "surviving N discrete retest failures without a body
+close back inside," where the one-two-punch is the source's own worked N=2 case** — not
+as elapsed time, which §6 of the first cycle already showed is flat. No duration is
+invented; N is counted, not chosen.
+
+### 13.3 Mechanisation — event-based consolidation and one-two-punch (spec + code)
+
+Both are specified precisely enough to code, and code has been written extending
+`orb_path_census.py`'s existing per-day loop (same `H, L, C, M, bi, side, bnd, back`
+objects it already computes). **The code below has not been executed — no Python
+execution was available in this sandbox.** It must be run against a small labelled
+sample (5-10 known days, visually checked) before any count from it is trusted, exactly
+as this programme's own self-test discipline requires elsewhere.
+
+New file: `13_CROSS_MARKET/CODE/orb_path_census_v2.py`
+
+```python
+#!/usr/bin/env python3
+"""
+UNTESTED THIS CYCLE — no Python execution was available. Validate against a small
+labelled sample (5-10 days, visually checked) before trusting any count from this file.
+
+Extends orb_path_census.census() with two event-based mechanisations requested in
+issue #3 (22 Sep 2026b cycle):
+  event_consolidation()  -- hover/consolidation with a measured, not chosen, length
+                            (V1 20:34 "failed to make a newer high, failed to make a
+                            newer low"; V2/V5 "three bar" / trend-range-trend)
+  one_two_punch()         -- Max's double-retest continuation confirmation (V8 11:18,
+                            corroborated by V8 14:52 and V12 27:23)
+Both take the same per-day arrays orb_path_census.census() already computes and return
+None (not measured) rather than a fabricated boolean when the source primitives don't
+resolve within the session.
+"""
+import numpy as np
+
+
+def event_consolidation(H, L, C, M, bi, side, back):
+    """
+    Event-based hover state, starting at the first bar after the retrace that fails to
+    extend the post-break extreme, ending at the first bar that resolves it either way.
+    Returns a dict or None if there was no retrace (back is empty) to start from.
+    """
+    if not len(back):
+        return None
+    r0 = bi + 1 + back[0]
+    ext = H[:r0 + 1].max() if side == 1 else L[:r0 + 1].min()
+    n = len(M)
+    i = r0 + 1
+    hover_len = 0
+    while i < n:
+        newer_with = (H[i] > ext) if side == 1 else (L[i] < ext)
+        # "opposite" extreme tracked only from r0 forward, i.e. the retrace low/high --
+        # this is the invalidation boundary, not the pre-break range.
+        opp_ref = L[r0:i].min() if side == 1 else H[r0:i].max()
+        newer_against = (L[i] < opp_ref) if side == 1 else (H[i] > opp_ref)
+        if newer_with:
+            return dict(start_m=int(M[r0]), end_m=int(M[i]), hover_bars=hover_len,
+                        resolution="continuation")
+        if newer_against:
+            return dict(start_m=int(M[r0]), end_m=int(M[i]), hover_bars=hover_len,
+                        resolution="failure")
+        hover_len += 1
+        i += 1
+    return dict(start_m=int(M[r0]), end_m=None, hover_bars=hover_len,
+                resolution="unresolved_by_session_end")
+
+
+def one_two_punch(H, L, C, M, bi, side, bnd, back):
+    """
+    Double-retest continuation confirmation (V8 11:18). Requires the level to be
+    retested and fail to reclaim TWICE before confirming on a newer extreme.
+    "Fail to reclaim" = price touches the boundary again but does not CLOSE back inside
+    the ORB (the source's own invalidation event, D.6/V8 06:11, is what "reclaiming"
+    means here -- so absence of that event is the retest's failure).
+    Returns None if fewer than two distinct retest touches occur before either an
+    inside close (disqualifies -- this is Entry 04 / V8 06:11 territory, not one-two-
+    punch) or the session ends.
+    """
+    if not len(back):
+        return None
+    n = len(M)
+    touches = []
+    i = bi + 1
+    in_touch = False
+    while i < n:
+        touching = (L[i] <= bnd <= H[i]) if side == 1 else (L[i] <= bnd <= H[i])
+        closed_inside = (C[i] < bnd) if side == 1 else (C[i] > bnd)
+        if closed_inside:
+            return dict(disqualified_at_m=int(M[i]), reason="closed_back_inside")
+        if touching and not in_touch:
+            touches.append(i)
+            in_touch = True
+        elif not touching:
+            in_touch = False
+        if len(touches) >= 2:
+            ext_after_first = (H[touches[0]:i + 1].max() if side == 1
+                                else L[touches[0]:i + 1].min())
+            ext_before_second = (H[touches[0]:touches[1]].max() if side == 1
+                                  else L[touches[0]:touches[1]].min())
+            newer = (H[i] > ext_before_second) if side == 1 else (L[i] < ext_before_second)
+            if newer:
+                return dict(retest1_m=int(M[touches[0]]), retest2_m=int(M[touches[1]]),
+                            confirm_m=int(M[i]), n_retests=len(touches))
+        i += 1
+    return dict(n_retests=len(touches), reason="unresolved_by_session_end")
+```
+
+**What this is not.** It is not run, it is not validated, and no count derived from it
+appears anywhere in this addendum. Per the mandate, no economics, no thresholds, no
+scoring were added — both functions return a measured length / a "which side resolved
+it," never a chosen window.
+
+### 13.4 Comparison framing (spec, not numbers)
+
+The mandate asks for the one-two-punch population's path outcome compared against (A)
+simple CeeWilli close-back-inside and (B) existing Max close-inside + newer-extreme-
+against (§7 of the first cycle). Those two are **failure-side** triggers; one-two-punch
+as reconstructed in §13.2 is a **continuation-side** trigger. The honest comparison is
+therefore not "which one predicts the same outcome better" but a **representation
+comparison across all three of how much confirmation the source demands before it calls
+the moment resolved**:
+
+| trigger | side | events required | population (this cycle) |
+|---|---|---|---|
+| CeeWilli E04 close-back-inside | failure | 1 (single body close inside) | measured, §7 |
+| Max close-inside + newer-extreme-against | failure | 2 (close inside, then a newer extreme against) | measured, §7 |
+| Max one-two-punch | continuation | 2 (two failed retests, second sets a newer extreme with) | **spec only — §13.3, pending local run** |
+
+Once run, this table should carry: n, % of all breaks selected, forward opposite-reach /
+continuation-reach rate, and median remaining distance at confirmation (same columns as
+§4.4), so it is comparable on the same basis as the first cycle's numbers.
+
+### 13.5 Nested path-count table (spec, no numbers invented)
+
+Requested shape for the next local run, forward-only from the actionable confirmation,
+mirroring §4/§7's structure exactly so it appends rather than replaces:
+
+```
+ORB side broken (ORH / ORL)
+  -> retrace (yes / no)
+    -> resolution class: continuation / failed-break / one-two-punch-continuation /
+       unresolved-by-16:00   [event_consolidation() + one_two_punch(), §13.3]
+      -> one-two-punch present / absent, WITHIN the continuation class only
+        -> opposite ORB subsequently reached (forward from confirmation) / not reached
+      -> remaining ORB distance (in W) at the confirmation bar  [same measure as §4.4]
+```
+
+Pooled + by direction (ORH/ORL) + by instrument (NAS100/US500), same as §4-§7.
+
+### 13.6 Visual pack (spec, no charts rendered — no data access)
+
+Extending `orb_failbreak_figs.py`'s conventions, five panels requested by the mandate:
+break -> retrace -> clean continuation; break -> retrace -> hover -> failed break ->
+opposite ORB; first retest fails but second resolves (the one-two-punch case,
+`retest1_m`/`retest2_m`/`confirm_m` from §13.3 marked on the chart); visually similar
+hover that continues instead; ambiguous/no-resolution case
+(`resolution="unresolved_by_session_end"`). Each panel must mark ORH, ORL, midline, the
+break bar, every retest touch, and the resolving bar — same rule the first cycle's
+visual review already established mattered (§9: reviewing figures is what surfaced §4.4).
+
+### 13.7 Revised state map — the hover branch made explicit
+
+Extends the first cycle's S3a/S3b map (§8) with the hover state and its two exits:
+
+```
+  S2  RETRACE    (unchanged, §8)
+        |
+        v
+  S2h HOVER      event_consolidation() start: first bar failing to extend the
+        |         post-break extreme. Length MEASURED, not chosen (§13.2/§13.3).
+        |
+        +--> resolves WITH the break  -> S3a CONTINUATION
+        |      one_two_punch() is the source's own worked N=2 sub-case of this exit
+        |      (V8 11:18); simple print-through (§1 row 7) is the N=1 case.
+        |
+        +--> resolves AGAINST the break -> S3b (unchanged, §8's existing failed-break
+        |      branch: close-inside, then newer-extreme-against)
+        |
+        +--> unresolved by session end (S3c, unchanged, §8)
+```
+
+The splice point identified in the first cycle (§8: "the splice point is S3b->S4") is
+unchanged by this addendum. What's new is only that S2's internal structure — the part
+between the retrace and whichever confirmation fires — now has a source-derived shape
+instead of being an unstructured gap.
+
+### 13.8 Explicit unresolved human-visual distinctions (revised from §10)
+
+1. **Whether the three-bar / hover identity (§13.2) actually holds on ORB days**, as
+   opposed to being two separately-taught patterns that happen to share vocabulary. Only
+   resolvable by running `event_consolidation()` and checking whether its detected hover
+   bars visually match a three-bar "range" candle, or by a **new** screenshot: Max
+   marking a three-bar pattern **at an ORB retrace specifically** (not a standalone
+   setup elsewhere in the session).
+2. **The one-two-punch's ASR ambiguity** (§13.2/§13.3) — "the second retest candle that
+   failed and closed outside of orb" is transcribed speech, not written source. **D5**
+   (Max marking the one-two-punch on one chart, per §10's original request) remains the
+   single highest-value unresolved screenshot; §13.3's code is one reasonable
+   mechanisation of the ASR text, not a certainty.
+3. **CeeWilli's bias** is unchanged from the first cycle: no method anywhere in the
+   playbook; the video veto (C4 07:08) is discretionary and not in the written spec.
+   **D2** still resolves it if it exists; nothing found this cycle changes that.
+4. **D4** (Max rejecting a break that didn't "hold outside") is still the only evidence
+   that could directly confirm or break the §13.2 N-failed-retests reframing of "hold
+   outside" — a positive one-two-punch example doesn't do this; only a **rejected**
+   candidate does, per the original §10 reasoning, which still holds.
+
+### 13.9 What remains for local execution
+
+Everything numeric in §§13.3-13.6 is pending the same local run already commissioned
+for the v2.3 CeeWilli/FVG cycle on this issue (`python3 run_v23_cycle.py` from
+`13_CROSS_MARKET/CODE/`). `orb_path_census_v2.py` (§13.3) is new and separate from that
+entry point — it extends `orb_path_census.py`'s per-day loop and should be wired in and
+validated on a small sample (5-10 days, visually checked against `orb_failbreak_figs.py`
+output) before it contributes any count to this file.
